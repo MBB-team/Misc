@@ -19,6 +19,13 @@ stat = fitglm(x,y,'linear');
 x2 = [min(x):(resol*range(x)):max(x)]';
 [y2,ic] = predict(stat,x2);
 [h,hp] = boundedline( x2 , y2 , ic(:,2)-ic(:,1) , 'alpha','transparency',alpha); 
+
+% [b,stat] = robustfit(x,y);
+% x2 = [min(x):(resol*range(x)):max(x)]';
+% y2 = b(1) + b(2)*x2;
+% ic = stat.se(1) + stat.se(2)*abs(x2);
+% [h,hp] = boundedline( x2 , y2 , ic , 'alpha','transparency',alpha); 
+
 set(h,'Color',col,'LineWidth',2);set(hp,'FaceColor',col);
 h.LineStyle = '-'; 
 [~,s,h] = errorscat(x,y,y.*0,col);
