@@ -4,7 +4,7 @@ function [ h,hp,s ] = corrplot( x,y, varargin )
 % Nicolas Borderies
 
 %% options
- if nargin<4
+ if nargin<3
      col = 'k';
  else
      col = varargin{1};
@@ -33,5 +33,5 @@ h.LineStyle = 'none';
                 
                 
 % legending
-text(min(x)*1.1,max(y)*0.9,['rho = ' num2str(round(rho,2))]);
-text(min(x)*1.1,max(y)*0.8,['p = ' num2str(round(p,10))]);
+text(nanmin(x)*1.1,nanmax(y)*0.9,['rho = ' num2str(round(rho,2))]);
+text(nanmin(x)*1.1,nanmax(y)*0.8,['p = ' num2str(round(p,10))]);
