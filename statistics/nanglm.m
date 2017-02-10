@@ -1,5 +1,7 @@
-function [beta,L,posterior,out] = nanglm(X,y,verbose,sparsity)
+function [beta,L,posterior,out] = nanglm(varargin)
 % nanglm - perform a glm analysis with missing data under the VBA scheme
+%
+% Syntax: function [beta,L,posterior,out] = nanglm(X,y,...)
 %
 % Inputs:
 %    X - design matrix
@@ -21,12 +23,27 @@ function [beta,L,posterior,out] = nanglm(X,y,verbose,sparsity)
 % November 2016; 
 
 % default arguments
-if nargin<4
-    sparsity=0;
-    if nargin<3
-        verbose=0;
+X = varargin{1};
+y = varargin{2};
+sparsity=0;
+verbose=0;
+logit=0;
+
+% optionnal arguments
+if nargin > 2;
+    for i=3:nargin
+        arg = varargin{i};
+        switch arg
+            case 'sparsity'
+                sparsity = varargin{i+1};
+            case 'verbose'
+                verbose = varargin{i+1};
+            case 'logit'
+                logit = varargin{i+1};
+        end
     end
 end
+
 
 %  data dimensions
 n = size(X,1); % # observations
@@ -43,6 +60,7 @@ inG.X = Xmd;
 inG.b = 1:p;
 inG.md = p+1:p+d;
 inG.xmd = tmp';
+inG.logit = logit;
 dim.n = 0;
 dim.n_theta = 0;
 dim.n_phi = p+d;
@@ -59,6 +77,9 @@ inG.smooth = 0.01;
 options.inG = inG;
 options.verbose = verbose;
 options.DisplayWin = verbose;
+if logit==1
+    options.binomial=1;
+end
 
 % inversion
 [posterior,out] = VBA_NLStateSpaceModel(y,[],[],g_fname,dim,options);
