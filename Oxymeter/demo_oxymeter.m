@@ -18,7 +18,7 @@ clc;
 
 % find emulated serial-to-usb port
 % valid 'portname' depends on the machine and the platform you are using,
-% try manually to find the one that match
+% try manually to find the one that match (check device manager, COM PORT)
 if ispc
     portname = 'COM3' ; %  common names: 'COM1','COM2','COM3'
 elseif ismac
@@ -51,6 +51,7 @@ figure; hold on;
 ax=gca;
 xlim([0 10]);
 ylim([0 100]);
+nsample = 500;
 time = nan(Tmax*60,1); % time (sec)
 ppg = nan(Tmax*60,1); % photoplethysmographic signal (au.)
 beat = nan(Tmax*60,1); % heart-beat flag (1/0) % inacurate estimates by the device
@@ -80,26 +81,26 @@ while stop==0
     else
         col='b.';
     end
-    plot(time(i),ppg(i),'b.','LineWidth',2); 
-    tlim = get(ax,'XLim');
-    if t> tlim(2);
-        tlim = [max(0,1.5*t-Tmax) 1.5*t];
-       set(ax,'XLim',tlim); 
-    end
+%     plot(time(i),ppg(i),'b.','LineWidth',2); 
+    samples = [max(1,i-nsample+1):i];
+    plot(time(samples),ppg(samples),'b','LineWidth',2); 
+    tlim = [time(samples(1)) time(samples(end))];
+    set(ax,'XLim',tlim); 
     
     % text annotation
+    xpos = 0.7*(tlim(2)-tlim(1)) + tlim(1);
     hrtext = ['HR = ' num2str(hr(i)) ' bpm'];
     delete(htext);
-    htext = text(0.7*tlim(2),80,hrtext,'FontSize',20,'Color','r');
+    htext = text(xpos,80,hrtext,'FontSize',20,'Color','r');
     
-    signaltext = ['signal quality = ' num2str(8-ret(end,1)) '/8'];  % signal quality: should be >= 5/8
+    signaltext = ['signal quality = ' num2str(8-ret(end,1)) '/8'];  % signal quality: should be >= 4/8 (arbitrary threshold)
     delete(stext);
-    stext = text(0.7*tlim(2),60,signaltext,'FontSize',20,'Color','r');
+    stext = text(xpos,60,signaltext,'FontSize',20,'Color','r');
     
     if ret(end,2)==1 || ret(end,3)==1 % signal loss warnings (or your subject is about to have respiratory failure)
         signaltext = ['signal lost!'];
         delete(stext);
-        stext = text(0.7*tlim(2),60,signaltext,'FontSize',20,'Color','r');
+        stext = text(xpos,60,signaltext,'FontSize',20,'Color','r');
     end
     
     % exit loop
