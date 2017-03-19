@@ -25,7 +25,7 @@ ob = findobj('-property','Box');
         end
 ob = findobj('-property','LineWidth');
         for iO = 1:numel(ob)
-            ob(iO).LineWidth = 1;
+            ob(iO).LineWidth = 2;
         end
         
 end

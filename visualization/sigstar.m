@@ -39,7 +39,7 @@ function varargout=sigstar(groups,stats,nosort)
 % bar([5,2,1.5])
 % sigstar({[2,3],[1,2], [1,3]},[nan,0.05,0.05])
 %
-% 3. 
+% 3.  **DOESN'T WORK IN 2014b**
 % R=randn(30,2);
 % R(:,1)=R(:,1)+3;
 % boxplot(R)
@@ -182,8 +182,9 @@ y=ylim;
 yd=myRange(y)*0.05; %separate sig bars vertically by 5% 
 
 for ii=1:length(groups)
-	thisY=findMinY(xlocs(ii,:))+yd;
-	H(ii,:)=makeBar(xlocs(ii,:),thisY,stats(ii));
+% 	thisY=findMinY(xlocs(ii,:))+yd;
+    thisY=y(2)+yd;
+    H(ii,:)=makeBar(xlocs(ii,:),thisY,stats(ii));
 end
 %-----------------------------------------------------
 
@@ -197,10 +198,12 @@ end
 %for all bars.
 yd=myRange(ylim)*0.01; %Ticks are 1% of the y axis range
 for ii=1:length(groups)
-	y=get(H(ii,1),'YData');
-	y(1)=y(1)-yd;
-	y(4)=y(4)-yd;	
-	set(H(ii,1),'YData',y)
+    if xlocs(ii,1)~=xlocs(ii,2)
+        y=get(H(ii,1),'YData');
+        y(1)=y(1)-yd;
+        y(4)=y(4)-yd;	
+        set(H(ii,1),'YData',y)
+    end
 end
 
 
@@ -232,25 +235,31 @@ function H=makeBar(x,y,p)
 %given p-value
 
 
-if p<=1E-3
+if p<=1e-3
 	stars='***'; 
-elseif p<=1E-2
+elseif p<=1e-2
 	stars='**';
 elseif p<=0.05
 	stars='*';
+elseif p<=0.10;
+	stars='°';
 elseif isnan(p)
-	stars='n.s.';
+	stars='';
 else
-	stars='n.s.';
+	stars='';
 end
 		
 x=repmat(x,2,1);
 y=repmat(y,4,1);
+
 H(1)=plot(x(:),y,'-k','LineWidth',1.5);
+if x(1)==x(2)
+    H(1).LineStyle = 'none';
+end
 
 %Increase offset between line and text if we will print "n.s."
 %instead of a star. 
-if p<=0.05
+if ~isnan(p)
     offset=0.005;
 else
     offset=0.02;
@@ -271,9 +280,16 @@ function Y=findMinY(x)
 %
 
 %First look for patch objects (bars in a bar-chart, most likely)
-p=findobj(gca,'Type','Patch');
-xd=get(p,'XData');
-if iscell(xd)
+if verLessThan('matlab','8.4.0')
+	p=findobj(gca,'Type','Patch');
+	xd=get(p,'XData');
+else
+	p=findobj(gca,'Type','bar')
+	xd=p.XData;
+end
+
+
+if iscell(xd) & verLessThan('matlab','8.4.0')
 	xd=groupedBarFix(xd,'x');
 end
 
@@ -283,18 +299,21 @@ xd(xd>x(2))=0;
 overlapping=any(xd,1); %These x locations overlap
 
 %Find the corresponding y values 
-clear xd
-yd=get(p,'YData');
-if iscell(yd)
+if verLessThan('matlab','8.4.0')
+	yd=get(p,'YData');
+else
+	yd=p.YData;
+end
+
+if iscell(yd) & verLessThan('matlab','8.4.0')
 	yd=groupedBarFix(yd,'y');
 end
+
 yd=yd(:,overlapping);
 
 %So we must have a value of at least Y in order to miss all the 
 %plotted bar data:
 Y=max(yd(:));
-
-
 
 %Now let's check if any other plot elements (such as significance bars we've 
 %already added) exist over this range of x values.
@@ -346,6 +365,8 @@ function out=groupedBarFix(in,xy)
 		out=max(out,[],3);
     end
 
+
 %replacement for stats toolbox range function
 function rng=myRange(x)
   rng = max(x) - min(x);
+
