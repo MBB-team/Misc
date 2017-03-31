@@ -364,7 +364,7 @@ try
         case 'fit95percentile'
             pd=fitdist(y,'Normal');
             ymean=pd.icdf(0.5);
-            yci=pd.icdf([0.025 0.975]);
+            yci=pd.icdf([0.025 0.975]);            
         otherwise
             warning(['Unknown CI type ' type]);
     end

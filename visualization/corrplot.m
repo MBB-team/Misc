@@ -14,7 +14,7 @@ function [ h,hp,s ] = corrplot( x,y, varargin )
  alpha = 0.4;
  
  
-[rho,p] = corr(x,y,'row','pairwise');
+[rho,p] = corr(x,y,'row','pairwise','type','Spearman');
 stat = fitglm(x,y,'linear');
 x2 = [min(x):(resol*range(x)):max(x)]';
 [y2,ic] = predict(stat,x2);
