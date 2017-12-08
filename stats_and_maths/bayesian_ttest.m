@@ -89,6 +89,7 @@ options.sources(1).out=1;
 options.sources(1).type=0;
 options.sources(2).out=2;
 options.sources(2).type=0;
+
 options.verbose=0;
 misssingData = isnan(samples);
 options.isYout = zeros(2,max(nsamples));
@@ -110,17 +111,15 @@ options.inG = inG;
 options.priors = priors;
 [p1,stat1] = VBA_NLStateSpaceModel(samples,dummy,[],g_fname,dim,options);
 
-% Perform statistical comparison
+% Perform statistical inference
+%%% test decision 
 lppRatio = (stat1.F - stat0.F);
 ep = 1./(1+exp(-lppRatio));
 h = (ep>=0.95);
-if lppRatio>=0
-    posterior.mu = p1.muPhi;
-    posterior.sigma = [p1.SigmaPhi(1,1);p1.SigmaPhi(2,2)];
-else
-    posterior.mu = p0.muPhi(1);
-    posterior.sigma = p0.SigmaPhi(1,1);
-end
+%%% posterior estimates
+p = VBA_BMA({p0;p1},[stat0.F;stat1.F]);
+posterior.mu = p.muPhi;
+posterior.sigma = [p.SigmaPhi(1,1);p.SigmaPhi(2,2)];
 
 % Formating
 stat=struct;

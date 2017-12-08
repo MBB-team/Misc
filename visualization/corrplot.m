@@ -3,18 +3,17 @@ function [ h,hp,s ] = corrplot( x,y, varargin )
 %
 % Nicolas Borderies
 
-%% options
- if nargin<3
-     col = 'k';
- else
-     col = varargin{1};
- end
+% check options
+optionList = {'color','ctype'};
+defaultList = { 'k', 'Spearman'};
+[col,ctype] = check_options(varargin,optionList,defaultList);
 
+ 
  resol = 0.05;
  alpha = 0.4;
  
  
-[rho,p] = corr(x,y,'row','pairwise','type','Spearman');
+[rho,p] = corr(x,y,'row','pairwise','type',ctype);
 stat = fitglm(x,y,'linear');
 x2 = [min(x):(resol*range(x)):max(x)]';
 [y2,ic] = predict(stat,x2);

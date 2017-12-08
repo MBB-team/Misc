@@ -1,4 +1,4 @@
-function [ y ] = safepos( x )
+function [ y, dydx ] = safepos( x )
 % SAFEPOSE is an approximation of max(x,0).
 % this function can be used to transform a parameter into positive numbers.
 
@@ -9,7 +9,11 @@ k=20;
 % However, if k is too big, the algorithm might fail to adjust the
 % parameters properly.
 
- y=log(1+exp(k*x))/k;
+% main output
+y=log(1+exp(k*x))/k;
+
+% first derivative
+dydx = exp(k*x)/(exp(k*x) + 1);
 
 if any(isinf(y))
     y(isinf(y))=x(isinf(y));

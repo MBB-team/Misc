@@ -16,6 +16,8 @@ function y = normalize(x,type)
 switch type
     case 'mean'
         y = x - nanmean(x);
+    case 'meanscore'
+        y = (x - nanmean(x))./nanmean(x);
     case 'variance'
         y = x./nanvar(x);
     case 'zscore'

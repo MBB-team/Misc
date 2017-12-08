@@ -6,7 +6,12 @@ function [beta,L,posterior,out] = nanglm(varargin)
 % Inputs:
 %    X - design matrix
 %    y   - observation vector
-%    verbose - flag to display text & figure (def=0)
+%
+%    (optional)
+%    'verbose' - flag to display text & figure (def=0)
+%    'sparsity' - flag to perform sparse GLM regression (def=0)
+%    'logit' - flag to perform logistic regression (def=0)
+
 %
 % Outputs:
 %    beta  - regression coefficients
