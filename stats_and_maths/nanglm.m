@@ -69,8 +69,15 @@ inG.logit = logit;
 dim.n = 0;
 dim.n_theta = 0;
 dim.n_phi = p+d;
+dim.n_t = 1;
+dim.p = n;
 priors.muPhi = zeros(dim.n_phi,1);
-priors.SigmaPhi = 1e0*eye(dim.n_phi);
+sigma = min([nanstd(y)*ones(1,dim.n_phi).*(nanvar(y)./nanvar(X)) ; 
+             nanstd(y)*ones(1,dim.n_phi) ]);
+if sparsity
+    sigma = 1e0.*ones(1,dim.n_phi);
+end
+priors.SigmaPhi = diag(sigma);
 options.isYout =  zeros(size(y));
 options.isYout(omp) = 1;
 y(omp) = 0;
@@ -78,7 +85,7 @@ y(omp) = 0;
 % options
 options.priors = priors;
 inG.sparsity = sparsity;
-inG.smooth = 0.01;
+inG.smooth = log(2);
 options.inG = inG;
 options.verbose = verbose;
 options.DisplayWin = verbose;
@@ -92,10 +99,11 @@ end
 % extract
 beta = posterior.muPhi(inG.b);
 if sparsity
-    beta = sparseTransform(posterior.muPhi(inG.b),inG.smooth);
+    beta = sparsify(posterior.muPhi(inG.b),inG.smooth);
 end
 L = out.F;
 
+% 
 
 end
 
