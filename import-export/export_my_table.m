@@ -1,7 +1,12 @@
-function [] = export_my_table( tab )
+function [] = export_my_table( tab , filename )
 
-    writetable(tab,'tab.xlsx','WriteRowNames',1);
-    open('tab.xlsx')
+    % defaults
+    if nargin<2
+        filename = 'tab.xlsx';
+    end
+
+    writetable(tab,filename,'WriteRowNames',1);
+    open(filename)
     
 end
 
