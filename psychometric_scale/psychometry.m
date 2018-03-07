@@ -19,14 +19,19 @@ function [] = psychometry(varargin)
 %           'LAY' -  normal procrastination trait
 %           'HAD' - pathological anxiety & depression state
 %           'POMS' - Profil of Mood States. normal mood state 
-%
+%           'IMI' - Intrinsic Motivation Inventory. normal motivation state
+%       fullscreen - display in fullscreen mode(1) or not (0) (logical)
+%       random_item - randomize the order of item within questionaires (1)
+%                     or not (0)(logical)
+%       random_test - randomize the order of questionaires (1)
+%                     or not (0)(logical)
 % Outputs:
 %
 % Example: 
 %   psychometry(10,2,'list',{'STARKSTEIN','BARATT','LAY'})
 %
 % Requirements: 
-%   Subfunctions:   identification_batmotiv.m , setDir.m , 
+%   Subfunctions:   set_task_configuration.m , 
 %   MAT-files: study.mat
 %   MATLAB products: MATLAB, Statistics and Machine Learning Toolbox,
 %                    Psychtoolbox, psychometric_scale library
@@ -48,7 +53,7 @@ list={'NORRIS',...
       'POMS'};
 random_item=0;
 random_test=0;
-set_task_configuration;
+set_psychometry_configuration;
 
 displayOption.win = display.window;
 displayOption.bound =Screen('Rect', display.window );
@@ -118,6 +123,12 @@ for iList = 1:numel(list)
     aga.instruction=listImage.psychometry.(['instruction' test_name ]);
     aga.listQuestion=psychometryStuff.(test_name).listQuestion;
     aga.listAnswer=psychometryStuff.(test_name).listAnswer;
+    if random_item
+        item_perm = randperm(numel(aga.listQuestion));
+        aga.listQuestion = aga.listQuestion(item_perm) ;
+        aga.listAnswer = aga.listAnswer(item_perm)  ;
+    end
+    
     switch test_name
         case {'NORRIS','CUSTOM_EVA'} % EVA - response format
             scaleOption.arrow.image=listImage.psychometry.arrow;
@@ -220,7 +231,7 @@ Screen('CloseAll');
 cd(subdir);
 psychometry = data.psychometry;
 save(resultname,'subid','nsession','psychometry');
-cd(root);
+cd(psychodir);
 
 clc;
 
