@@ -13,3 +13,4 @@ Mx = sparse(idx,x,1,n,k,n);
 Px = nonzeros(mean(Mx,1));
 Hx = -dot(Px,log2(Px));
 z = max(0,Hx);
+z(isempty(x)) = NaN ;

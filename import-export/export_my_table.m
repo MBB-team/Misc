@@ -6,7 +6,8 @@ function [] = export_my_table( tab , filename )
     end
 
     writetable(tab,filename,'WriteRowNames',1);
-    open(filename)
+%     open(filename);
+    winopen(filename);
     
 end
 

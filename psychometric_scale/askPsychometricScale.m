@@ -44,8 +44,9 @@ KbReleaseWait;
 [k, timedown, KeyCode, d] = KbCheck;
 
 caseXYD=[3/8*centerX 3/4*centerY, centerY/20];
-nQuestion=length(stuff.listQuestion);
-nAnswer=length(stuff.listAnswer);
+nQuestion=size(stuff.listQuestion,1);
+nAnswer=size(stuff.listAnswer,1);
+changeAnswer = (size(stuff.listAnswer,2)>=2);
 
 for iQ = 1:nQuestion
     cQ=Sample(1:nAnswer);
@@ -56,7 +57,13 @@ for iQ = 1:nQuestion
         for iA=1:nAnswer
             Screen('DrawTexture',displayOption.win,stuff.caseN, [], [caseXYD(1), caseXYD(2) + (iA-1)*2*caseXYD(3), caseXYD(1)+caseXYD(3), caseXYD(2)+(1+(iA-1)*2)*caseXYD(3)] );
             textBox=[caseXYD(1)+2*caseXYD(3), caseXYD(2)+(1/2+(iA-1)*2)*caseXYD(3)-20, displayOption.screenXY(3), caseXYD(2)+(1/2+(iA-1)*2)*caseXYD(3)+20];
-            DrawFormattedText(displayOption.win, stuff.listAnswer{iA}, caseXYD(1)+2*caseXYD(3), 'center',miscOption.color.text, 60 , [], [], 2 , [],textBox );
+            if changeAnswer
+                DrawFormattedText(displayOption.win, stuff.listAnswer{iA,iQ}, caseXYD(1)+2*caseXYD(3),caseXYD(2)+((iA-1)*2)*caseXYD(3)-20,miscOption.color.text, 60);
+%                 DrawFormattedText(displayOption.win, stuff.listAnswer{iA,iQ}, caseXYD(1)+2*caseXYD(3), 'center',miscOption.color.text, 60 , [], [], 2 , [],textBox );
+            else
+                DrawFormattedText(displayOption.win, stuff.listAnswer{iA}, caseXYD(1)+2*caseXYD(3),caseXYD(2)+((iA-1)*2)*caseXYD(3)-20,miscOption.color.text, 60);
+%                 DrawFormattedText(displayOption.win, stuff.listAnswer{iA}, caseXYD(1)+2*caseXYD(3), 'center',miscOption.color.text, 60 , [], [], 2 , [],textBox );
+            end
         end
         Screen('DrawTexture',displayOption.win,stuff.caseV, [], [caseXYD(1), caseXYD(2)+((cQ-1)*2)*caseXYD(3), caseXYD(1)+caseXYD(3), caseXYD(2)+((cQ-1)*2+1)*caseXYD(3)] );
 

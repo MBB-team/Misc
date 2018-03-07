@@ -1,4 +1,4 @@
-function [ result ] = askEVA_Norris( stuff ,questionOption, displayOption, scaleOption, key )
+function [ result ] = askEVA( stuff ,questionOption, displayOption, scaleOption, key )
 
 %% This function launch EVA scales 
 
