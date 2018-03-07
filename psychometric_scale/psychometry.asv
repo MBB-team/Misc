@@ -17,7 +17,7 @@ function [] = psychometry(varargin)
 %           'BARATT' - normal impulsivity trait
 %           'STARKSTEIN' - pathological apathy state
 %           'LAY' -  normal procrastination trait
-%           'HAD' - pathological anxiety & depression state (WARNING : under development)
+%           'HAD' - pathological anxiety & depression state
 %           'POMS' - Profil of Mood States. normal mood state 
 %           'IMI' - Intrinsic Motivation Inventory. normal motivation state
 %       fullscreen - display in fullscreen mode(1) or not (0) (logical)
@@ -126,7 +126,7 @@ for iList = 1:numel(list)
     aga.listAnswer=psychometryStuff.(test_name).listAnswer;
     nItems = max([size(aga.listQuestion,1),size(aga.listAnswer,1)]);
     if random_item
-        if numel(aga.listQuestion)~=1
+        if numel(stuff.listQuestion)~=1
             permutation = randperm(numel(aga.listQuestion));
             aga.listQuestion = aga.listQuestion(permutation) ;
         else
@@ -135,8 +135,6 @@ for iList = 1:numel(list)
         end
         if size(aga.listQuestion,1)==size(aga.listAnswer,1)
             aga.listAnswer = aga.listAnswer(permutation,:)  ;
-        elseif size(aga.listQuestion,1)==size(aga.listAnswer,2)
-            aga.listAnswer = aga.listAnswer(:,permutation)  ;
         end
     else
         permutation = [1:nItems];
@@ -157,10 +155,10 @@ for iList = 1:numel(list)
         otherwise % multiple choice - response format
             aga.caseN=listImage.psychometry.case;
             aga.caseV=listImage.psychometry.caseV;
-            data.psychometry.(test_name).responses = askPsychometricScale(aga , displayOption, key );
+            data.psychometry.(test_name).responses = askEVA(aga,questionOption,displayOption, scaleOption, key);
     end
-    data.psychometry.(test_name).result =  data.psychometry.(test_name).responses;
-    data.psychometry.(test_name).result(permutation) =  data.psychometry.(test_name).responses;
+    data.psychometry.CUSTOM_EVA.result =  data.psychometry.(test_name).responses;
+    data.psychometry.CUSTOM_EVA.result(permutation) =  data.psychometry.(test_name).responses;
     KbReleaseWait;
 end
 
@@ -222,7 +220,7 @@ end
 
 % HAD
 if  ismember('HAD',list)
-    data.psychometry.HAD.total = sum(data.psychometry.HAD.result);
+     data.psychometry.HAD.total = sum(data.psychometry.HAD.result);
     data.psychometry.HAD.anxietyScore = sum(data.psychometry.HAD.result([1:7]));
     data.psychometry.HAD.depressionScore = sum(data.psychometry.HAD.result([8:14]));
 end
