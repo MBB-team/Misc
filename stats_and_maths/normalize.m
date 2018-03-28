@@ -1,5 +1,5 @@
 function y = normalize(x,type)
-% this function normalize a vector x with a specified method in the 
+%% this function normalize a vector x with a specified method in the 
 % type argument
 %
 % Inputs:
