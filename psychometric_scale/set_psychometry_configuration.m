@@ -118,6 +118,7 @@ key.down = KbName('DownArrow');
 key.space = KbName('Space') ;
 key.valid = KbName('Space');
 key.escape = KbName('ESCAPE') ;
+key.back = KbName('c') ;
 %key.clear = KbName('BackSpace') ;
 if exist('laptop')
     if laptop

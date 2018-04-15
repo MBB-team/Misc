@@ -107,7 +107,7 @@ for iList = 1:numel(list)
     psychometryStuff.(test_name).listQuestion = aga.([test_name '_Q' ]);
     psychometryStuff.(test_name).listAnswer = aga.([test_name '_R' ]);
 end
-
+clear aga
 
 %% Testing
 %-----------------------------------------------
@@ -157,7 +157,7 @@ for iList = 1:numel(list)
         otherwise % multiple choice - response format
             aga.caseN=listImage.psychometry.case;
             aga.caseV=listImage.psychometry.caseV;
-            data.psychometry.(test_name).responses = askPsychometricScale(aga , displayOption, key );
+            data.psychometry.(test_name).responses = askPsychometricScale2(aga , displayOption, key );
     end
     data.psychometry.(test_name).result =  data.psychometry.(test_name).responses;
     data.psychometry.(test_name).result(permutation) =  data.psychometry.(test_name).responses;

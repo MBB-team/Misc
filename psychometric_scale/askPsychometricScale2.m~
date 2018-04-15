@@ -19,13 +19,13 @@ else
     responseOption=key;
 end   
 
-if isfield(responseOption.key, 'back')
+if isfield(responseOption, 'back')
    isGoBackAllowed = 1;
 else
     isGoBackAllowed = 0;
 end
 
- isGoBackAllowed 
+
 displayOption.screenXY=Screen(displayOption.win,'Rect');
 centerX=(displayOption.screenXY(3)-displayOption.screenXY(1))/2;
 centerY=(displayOption.screenXY(4)-displayOption.screenXY(2))/2;
@@ -102,19 +102,17 @@ while iQ <= nQuestion
         Screen(displayOption.win, 'Flip');
     end
     
-
+    if isGoBackAllowed == 1 & isCancelQuestion  ==1 
+    end
         
+        if isCancel  ==1 
+            iQ = iQ-1;
+        else
+            
+    
     KbReleaseWait;
     KeyCode=KeyCode*0;
     recScale(iQ)=cQ;
-    
-    if isGoBackAllowed == 1 & isCancelQuestion  ==1 
-        iQ = max(1, iQ-1);
-    else
-        iQ = iQ+1;
-    end
-    
-    
 end
 
 
