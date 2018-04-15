@@ -1,4 +1,4 @@
-function [logAnswer] = askQuestion( questionOption, displayOption, scaleOption, responseOption )
+function [logAnswer] = askQuestion2( questionOption, displayOption, scaleOption, responseOption )
 %% This function print a question and allow to answer through a scale / a cursor
 % Various display options are provided
 
@@ -11,8 +11,7 @@ function [logAnswer] = askQuestion( questionOption, displayOption, scaleOption, 
         responseOption.maxTime = Inf;
         
     end
-    
-    
+     
     if ~isfield(responseOption, 'timeBlock')
          responseOption.timeBlock = 0.1;
     end
@@ -30,21 +29,13 @@ function [logAnswer] = askQuestion( questionOption, displayOption, scaleOption, 
     end
     
     if ~isfield(questionOption,'label')
-        questionOption.label={'', ''};
+        questionOption.label= cell(1, scaleOption.nBar);
     end
     
     if ~isfield(questionOption, 'labelY')
         questionOption.labelY=0.65;
     end
 
-    if isfield(questionOption, 'labelScale')
-        scaleOption.label=questionOption.labelScale;
-    end
-    
-    if ~isfield(questionOption, 'labelX')
-        questionOption.labelX=scaleOption.wBound;
-    end
-    
     if ~isfield(scaleOption, 'color')
         scaleOption.color=[255 255 255];
     end
@@ -70,6 +61,19 @@ function [logAnswer] = askQuestion( questionOption, displayOption, scaleOption, 
     
     
     
+    %% transform label
+    scaleOption.label = cell(1, scaleOption.nBar);
+    if length(questionOption.label) == scaleOption.nBar
+          scaleOption.label = questionOption.label;
+    else
+        if isfield(questionOption,'labelX')
+            scaleOption.label(questionOption.labelX) = questionOption.label;
+        else
+            labelX = round(linspace(1, scaleOption.nBar, length(questionOption.label)));
+            scaleOption.label(labelX) = questionOption.label;
+        end
+    end
+    
     %% Set Things
     x0 = displayOption.screenXY(1);
     y0 = displayOption.screenXY(2);
@@ -77,8 +81,8 @@ function [logAnswer] = askQuestion( questionOption, displayOption, scaleOption, 
     Y=displayOption.screenXY(4)-displayOption.screenXY(2);
     
     isAnswer = 0;
-    iCurseur = round(((scaleOption.nBar-1)/4))+randi(1+round((scaleOption.nBar-1)/2));
-    logAnswer.initialPosition=iCurseur/scaleOption.nBar;
+    iCurseur = Sample(1:scaleOption.nBar);
+    logAnswer.initialPosition=iCurseur;
     
     %% Print question until answer
     
@@ -87,7 +91,7 @@ function [logAnswer] = askQuestion( questionOption, displayOption, scaleOption, 
         %% Get input and move cursor
          [k, timePress, KeyCode, d] = KbCheck(-1);
         if (KeyCode(key.left) == 1)
-            iCurseur=max(0,iCurseur-1);
+            iCurseur=max(1,iCurseur-1);
             logAnswer.timePress(end+1)=timePress;
             logAnswer.sidePress(end+1)=-1;
             %KbReleaseWait([],logAnswer.timePress(end)+responseOption.timeBlock);
@@ -110,27 +114,39 @@ function [logAnswer] = askQuestion( questionOption, displayOption, scaleOption, 
             logAnswer.nPress = length(logAnswer.sidePress);
             logAnswer.timeFirstPress = logAnswer.timePress(1) - responseOption.t0;
             logAnswer.RT = logAnswer.timePress(end) - responseOption.t0;
-            logAnswer.finalPosition=iCurseur/scaleOption.nBar;
+            logAnswer.finalPosition=iCurseur;
             KbReleaseWait(-1);
         end
         
         
-
-        %% Print question & labels
-        DrawFormattedText(displayOption.win, questionOption.question, 'center', y0 + questionOption.y * Y, scaleOption.color);
-        labelBox=[x0 + questionOption.labelX(1)*X-X, y0 + questionOption.labelY * Y - Y, x0 + questionOption.labelX(1)*X+X, y0 + questionOption.labelY * Y + Y];
-        DrawFormattedText(displayOption.win, questionOption.label{1}, 'center', 'center', scaleOption.color,[],[],[],[],[],labelBox );
-        labelBox=[x0 + questionOption.labelX(2)*X-X, y0 + questionOption.labelY * Y - Y, x0 + questionOption.labelX(2)*X+X, y0 + questionOption.labelY * Y + Y];
-        DrawFormattedText(displayOption.win, questionOption.label{2}, 'center', 'center', scaleOption.color,[],[],[],[],[],labelBox );
+        %% Get maximal number of character per lign
+        % That's quite stupid but I don't know how to get that info with psychotoolbow...
+        isMax = 0;
+        nMaxCharacter = 1;
+        while isMax == 0
+             [~, ~, bounds] =DrawFormattedText(displayOption.win, repmat('o',1, nMaxCharacter), 'center', 'center');
+             if bounds(3) < displayOption.screenXY(3)
+                nMaxCharacter = nMaxCharacter+1;
+             else
+                isMax = 1;
+             end
+        end
         
+        %% This line should be changed...
+        Screen('FillRect',displayOption.win,255 - scaleOption.color, displayOption.screenXY);
+        
+        %% Print question
+        DrawFormattedText(displayOption.win, double(questionOption.question), 'center', y0 + questionOption.y * Y, scaleOption.color, nMaxCharacter);
         
         %% Print scale
-        scaleOption.arrow.position=iCurseur/scaleOption.nBar;
+        scaleOption.arrow.position=iCurseur;
+        scaleOption.labelY = questionOption.labelY;
         displayScale(displayOption.win, displayOption.screenXY, scaleOption);
         Screen(displayOption.win, 'Flip');
     end
     
-    logAnswer.currentPosition=iCurseur/scaleOption.nBar;
+    logAnswer.currentPosition=iCurseur;
+    logAnswer.FinalPercentage=(iCurseur-1) / (scaleOption.nBar-1);
     
     if (GetSecs > (responseOption.t0 + responseOption.maxTime)) & isfield(responseOption, 'tooLateFeedback')
         DrawFormattedText(displayOption.win, responseOption.tooLateFeedback.feedback, 'center', 'center', scaleOption.color);

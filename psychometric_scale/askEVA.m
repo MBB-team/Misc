@@ -45,7 +45,7 @@ end
 for iQuestion = 1:length(stuff.listQuestion)
     questionOption.question = stuff.listQuestion{iQuestion};
     questionOption.label=stuff.listAnswer(iQuestion,:);
-    result(iQuestion)=askQuestion2(questionOption, displayOption, scaleOption, responseOption);
+    result(iQuestion)=askQuestion(questionOption, displayOption, scaleOption, responseOption);
 end
 
 
