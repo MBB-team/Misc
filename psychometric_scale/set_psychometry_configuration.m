@@ -62,9 +62,13 @@ end
 
 % define group & subject result directory
 cd(psychodir)
-resultdir=[psychodir filesep 'data'];
+
+if ~exist('resultdir')
+    resultdir=[psychodir filesep 'data'];
+end
+
 if exist(resultdir,'dir')~=7
-    mkdir data
+    mkdir(resultdir);
 end
 cd(resultdir);
 subdir=[resultdir [filesep 'sub' num2str(subid)]];

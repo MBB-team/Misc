@@ -10,7 +10,7 @@ function [ recScale ] = askPsychometricScale(  stuff , displayOption, key, miscO
     % win : index of the display window
 % key (or key.key)
     % Required fields are up, down and valid
-    % key.back is an optionnal field allowing to get back to the previous question
+    % key.back is an optionnal key allowing to get back to the previous question
 
 %% For compatibility
 if ~isfield(key, 'key')
@@ -25,7 +25,6 @@ else
     isGoBackAllowed = 0;
 end
 
- isGoBackAllowed 
 displayOption.screenXY=Screen(displayOption.win,'Rect');
 centerX=(displayOption.screenXY(3)-displayOption.screenXY(1))/2;
 centerY=(displayOption.screenXY(4)-displayOption.screenXY(2))/2;
@@ -51,36 +50,68 @@ waitForKey(responseOption.key.space);
 KbReleaseWait;
 [k, timedown, KeyCode, d] = KbCheck;
 
-caseXYD=[3/8*centerX 3/4*centerY, centerY/20];
+caseXYD=[1/16*centerX 3/4*centerY, centerY/20];
 nQuestion=size(stuff.listQuestion,1);
-nAnswer=size(stuff.listAnswer,1);
-changeAnswer = (size(stuff.listAnswer,2)>=2);
+
+if any(size(stuff.listAnswer) == 1) % Same answers for all question
+    if size(stuff.listAnswer, 1) == 1
+        listAnswer = repmat(stuff.listAnswer, nQuestion, 1);
+    else
+        listAnswer = repmat(stuff.listAnswer', nQuestion, 1);
+    end
+else
+    if size(stuff.listAnswer, 1) == nQuestion
+        listAnswer  = stuff.listAnswer;
+    else
+        listAnswer  = stuff.listAnswer';
+    end
+end
+
+assert(size(listAnswer,1) == nQuestion, 'Wrong number of answers');
 iQ=1;
 
+%% Get maximal number of character per lign
+% That's quite stupid but I don't know how to get that info with psychotoolbow...
+isMax = 0;
+nMaxCharacter = 1;
+while isMax == 0
+    [~, ~, bounds] =DrawFormattedText(displayOption.win, repmat('o',1, nMaxCharacter), caseXYD(1)+2*caseXYD(3), 1/2*centerY, miscOption.color.text);
+    if bounds(3) < displayOption.screenXY(3)
+        nMaxCharacter = nMaxCharacter+1;
+    else
+        isMax = 1;
+    end
+end
+
+% Screen(displayOption.win, 'Flip');
+% pause
+
 while iQ <= nQuestion
+    answer = listAnswer(iQ,:);
+    answer = answer(~cellfun(@isempty, answer));
+    nAnswer = length(answer);
     cQ=Sample(1:nAnswer);
     isCancelQuestion = 0;
     while ((KeyCode(key.valid) == 0));
         Screen('FillRect',displayOption.win,miscOption.color.back, displayOption.screenXY);
         text= [stuff.listQuestion{iQ}];
-        DrawFormattedText(displayOption.win, double(text), 1/16*centerX, 1/2*centerY, miscOption.color.text);
+        DrawFormattedText(displayOption.win, double(text), 1/16*centerX, 1/2*centerY, miscOption.color.text, nMaxCharacter);
         %DrawFormattedText(displayOption.win, double(text), 'center', 1/2*centerY, miscOption.color.text);
+        
+        shift = caseXYD(2);
         for iA=1:nAnswer
-            caseBox = [caseXYD(1), caseXYD(2) + (iA-1)*2*caseXYD(3), caseXYD(1)+caseXYD(3), caseXYD(2)+(1+(iA-1)*2)*caseXYD(3)];
-            Screen('DrawTexture',displayOption.win,stuff.caseN, [],  caseBox);
-            if changeAnswer
-                text = double(stuff.listAnswer{iA,iQ});
+            caseBox = [caseXYD(1), shift , caseXYD(1)+caseXYD(3), shift + caseXYD(3)];
+            if iA == cQ
+                Screen('DrawTexture',displayOption.win,stuff.caseV, [],  caseBox);
             else
-                text = double(stuff.listAnswer{iA});
+                Screen('DrawTexture',displayOption.win,stuff.caseN, [],  caseBox);
             end
-            
+            text = double(answer{iA});
             sx = caseBox(3) + caseXYD(3);
-            sy = caseBox(4);
-            
-            DrawFormattedText(displayOption.win, text, sx,sy,miscOption.color.text, 60);
-           
+            sy = caseBox(4) - caseXYD(3)/4;
+            [nx, ny] =DrawFormattedText(displayOption.win, text, sx,sy,miscOption.color.text, nMaxCharacter);
+            shift = ny + 1.5* caseXYD(3);
         end
-        Screen('DrawTexture',displayOption.win,stuff.caseV, [], [caseXYD(1), caseXYD(2)+((cQ-1)*2)*caseXYD(3), caseXYD(1)+caseXYD(3), caseXYD(2)+((cQ-1)*2+1)*caseXYD(3)] );
 
         if (KeyCode(key.up) == 1)
             cQ=(cQ>1)*(cQ-1)+(cQ==1);
