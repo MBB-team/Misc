@@ -91,7 +91,8 @@ if scaleOption.arrow.visible ==1
     sizeRatio = scaleOption.arrow.Y/scaleOption.arrow.X;
     scaleOption.arrow.X=X*scaleOption.arrow.size;
     scaleOption.arrow.Y=scaleOption.arrow.X*sizeRatio;
-    xArrow= scaleDim(1) + scaleDim(5) * (scaleOption.arrow.position-1)/ (scaleOption.nBar-1);
+    xArrow= scaleDim(1)+scaleOption.arrow.position * (scaleDim(5));
+    xArrow= scaleDim(1) + scaleDim(5) * (iBar-1)/ (scaleOption.nBar-1);
     arrowBox= [xArrow-scaleOption.arrow.X/2,  scaleDim(4) + scaleOption.arrow.y * Y, xArrow+scaleOption.arrow.X/2,  scaleDim(4) + scaleOption.arrow.y * Y+scaleOption.arrow.Y];
     Screen('DrawTexture',wPtr,scaleOption.arrow.image, [], arrowBox);
 end

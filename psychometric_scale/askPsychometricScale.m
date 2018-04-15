@@ -95,10 +95,10 @@ while iQ <= nQuestion
     while ((KeyCode(key.valid) == 0));
         Screen('FillRect',displayOption.win,miscOption.color.back, displayOption.screenXY);
         text= [stuff.listQuestion{iQ}];
-        DrawFormattedText(displayOption.win, double(text), 1/16*centerX, 1/2*centerY, miscOption.color.text, nMaxCharacter);
+        [nx, ny]= DrawFormattedText(displayOption.win, double(text), 1/16*centerX, 1/2*centerY, miscOption.color.text, nMaxCharacter);
         %DrawFormattedText(displayOption.win, double(text), 'center', 1/2*centerY, miscOption.color.text);
         
-        shift = caseXYD(2);
+        shift = max( caseXYD(2), ny + 4*caseXYD(3));
         for iA=1:nAnswer
             caseBox = [caseXYD(1), shift , caseXYD(1)+caseXYD(3), shift + caseXYD(3)];
             if iA == cQ

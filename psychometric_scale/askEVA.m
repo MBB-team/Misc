@@ -35,15 +35,17 @@ Screen('DrawTexture',displayOption.win,stuff.instruction, [], displayOption.boun
 Screen(displayOption.win, 'Flip');
 waitForKey(responseOption.key.space);
 
+ShowCursor();
+
+if size(stuff.listAnswer, 1) == 1
+    stuff.listAnswer = repmat(stuff.listAnswer, length(stuff.listQuestion), 1);
+end
+
 % Perform EVA 
-for iQuestion = 1:length(stuff.listAnswer)
-    if numel(stuff.listQuestion)==1
-        questionOption.question = stuff.listQuestion{:};
-    else
-        questionOption.question = stuff.listQuestion{iQuestion};
-    end
+for iQuestion = 1:length(stuff.listQuestion)
+    questionOption.question = stuff.listQuestion{iQuestion};
     questionOption.label=stuff.listAnswer(iQuestion,:);
-    result(iQuestion)=askQuestion(questionOption, displayOption, scaleOption, responseOption);
+    result(iQuestion)=askQuestion2(questionOption, displayOption, scaleOption, responseOption);
 end
 
 

@@ -93,6 +93,7 @@ listImage.psychometry.caseV=Screen('MakeTexture',displayOption.win,aga);
 % Load psychometry stuff
 for iList = 1:numel(list)
     test_name = list{iList};
+    test_name
     switch test_name
         case {'POMS','IMI'}
             try
@@ -102,7 +103,7 @@ for iList = 1:numel(list)
             catch
                 aga = load ([psychodir filesep 'stuff' filesep test_name '.mat']);
             end
-        case {'IDSSR30'}
+        case {'IDSSR30', 'CTQ', 'SHAPS', 'QLESQ', 'SF36'}
                 aga=struct;
                 [~, aga.([test_name '_Q' ])] = xlsread([ test_name '.xlsx'], 1);
                 [~, aga.([test_name '_R' ])] = xlsread([ test_name '.xlsx'], 2);
@@ -159,6 +160,17 @@ for iList = 1:numel(list)
             scaleOption.y = 0.75;    
             questionOption.labelY=0.8;
             data.psychometry.(test_name).responses = askEVA(aga,questionOption,displayOption, scaleOption, key);
+        case {'SSMQ'}   
+            scaleOption.arrow.image=listImage.psychometry.arrow;
+            scaleOption.nBar=9;  
+            scaleOption.arrow.y = -1/8;    % Position of the arrow (in % of screen), the 0 is the position of the scale (should be in dimension option but kept for compatibility)
+            scaleOption.arrow.size = 1/50; % SIze of the arrow
+            scaleOption.lVisibleBar=[];
+            questionOption.y = 0.25;
+            scaleOption.y = 0.75;    
+            questionOption.labelY=0.8;
+            data.psychometry.(test_name).responses = askEVA(aga,questionOption,displayOption, scaleOption, key);
+            
         otherwise % multiple choice - response format
             aga.caseN=listImage.psychometry.case;
             aga.caseV=listImage.psychometry.caseV;
