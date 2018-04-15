@@ -61,14 +61,15 @@ else
 end
 
 % define group & subject result directory
-resultdir=[psychodir '\data'];
+cd(psychodir)
+resultdir=[psychodir filesep 'data'];
 if exist(resultdir,'dir')~=7
     mkdir data
 end
 cd(resultdir);
-subdir=[resultdir ['\sub' num2str(subid)]];
+subdir=[resultdir [filesep 'sub' num2str(subid)]];
 if exist(subdir,'dir')~=7
-    mkdir(resultdir,['\sub' num2str(subid)]);
+    mkdir(resultdir,[filesep 'sub' num2str(subid)]);
 end
 resultname=strcat(studyName,'_',taskName,'_sub',num2str(subid),'_sess',num2str(nsession));
 clck = clock;
@@ -117,7 +118,7 @@ key.down = KbName('DownArrow');
 key.space = KbName('Space') ;
 key.valid = KbName('Space');
 key.escape = KbName('ESCAPE') ;
-key.clear = KbName('BackSpace') ;
+%key.clear = KbName('BackSpace') ;
 if exist('laptop')
     if laptop
         key.digit = [48:57];        

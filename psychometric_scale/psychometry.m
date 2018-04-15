@@ -22,7 +22,7 @@ function [] = psychometry(varargin)
 %           'IMI' - Intrinsic Motivation Inventory. normal motivation state
 %       fullscreen - display in fullscreen mode(1) or not (0) (logical)
 %       random_item - randomize the order of item within questionaires (1)
-%                     or not (0)(logical)
+%                     or not (0)(logical) Warning : does not work / do not use.
 %       random_test - randomize the order of questionaires (1)
 %                     or not (0)(logical)
 % Outputs:
