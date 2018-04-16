@@ -48,6 +48,13 @@ function [logAnswer] = askQuestion2( questionOption, displayOption, scaleOption,
         key=responseOption;
     end
     
+    if isfield(responseOption.key, 'back')
+        isGoBackAllowed = 1;
+    else
+        isGoBackAllowed = 0;
+    end
+    
+    
     if ~isfield(displayOption, 'screenXY')
         displayOption.screenXY=Screen(displayOption.win,'Rect');
     end
@@ -85,6 +92,7 @@ function [logAnswer] = askQuestion2( questionOption, displayOption, scaleOption,
     logAnswer.initialPosition=iCurseur;
     
     %% Print question until answer
+    logAnswer.isCancelQuestion = 0;
     
     while (GetSecs < (responseOption.t0 + responseOption.maxTime)) & isAnswer ==0
         
@@ -105,6 +113,14 @@ function [logAnswer] = askQuestion2( questionOption, displayOption, scaleOption,
             WaitSecs(responseOption.timeBlock);
         end   
          
+       if isGoBackAllowed == 1
+             if (KeyCode(key.back) == 1)
+                 logAnswer.isCancelQuestion = 1;
+                 KbReleaseWait;
+             end
+        end
+        
+        
         %% Get validation
         
         if (KeyCode(key.valid) == 1)

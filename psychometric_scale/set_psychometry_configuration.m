@@ -94,7 +94,7 @@ if fullscreen
 else
     nScreen=numel(Screen('Screens'));
     if nScreen>=2
-        i_window=2;
+        i_window=max(Screen('Screens'));
         [display.window]=Screen('OpenWindow',i_window,[0 0 0],[]); % testing window
         [L, H]=Screen('WindowSize',i_window);
         x=L/2;

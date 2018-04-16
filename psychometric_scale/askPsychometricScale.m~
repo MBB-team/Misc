@@ -1,4 +1,4 @@
-function [ recScale, orderQuestion ] = askPsychometricScale(  stuff , displayOption, key, miscOption )
+function [ recScale ] = askPsychometricScale(  stuff , displayOption, key, miscOption )
 %% This is a generic function to perform a psychometric scale
 
 % Stuff is a structure containing:
@@ -95,8 +95,6 @@ end
 
 if miscOption.isRandomizeQuestionOrder ==1;
     orderQuestion = randperm(nQuestion);
-else
-    orderQuestion = 1:nQuestion;
 end
 
 
@@ -160,7 +158,7 @@ while iQ <= nQuestion
         
     KbReleaseWait;
     KeyCode=KeyCode*0;
-    recScale(currentQ)=chosenAnswer;
+    recScale(iQ)=chosenAnswer;
     
     if isGoBackAllowed == 1 & isCancelQuestion  ==1 
         iQ = max(1, iQ-1);

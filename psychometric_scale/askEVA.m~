@@ -54,7 +54,7 @@ if size(stuff.listAnswer, 1) == 1
     stuff.listAnswer = repmat(stuff.listAnswer, length(stuff.listQuestion), 1);
 end
 
-nQuestion = length(stuff.listQuestion);
+
 if miscOption.isRandomizeQuestionOrder ==1;
     orderQuestion = randperm(nQuestion);
 else
@@ -64,7 +64,7 @@ end
 
 % Perform EVA 
 iQuestion = 1;
-while iQuestion <= nQuestion
+while iQuestion <= length(stuff.listQuestion)
     
     if miscOption.isRandomizeQuestionOrder ==1;
         currentQuestion =  orderQuestion(iQuestion);
@@ -74,11 +74,11 @@ while iQuestion <= nQuestion
     
     
     
-    questionOption.question = stuff.listQuestion{currentQuestion};
-    questionOption.label=stuff.listAnswer(currentQuestion,:);
-    result(currentQuestion)=askQuestion(questionOption, displayOption, scaleOption, responseOption);
+    questionOption.question = stuff.listQuestion{iQuestion};
+    questionOption.label=stuff.listAnswer(iQuestion,:);
+    result(iQuestion)=askQuestion(questionOption, displayOption, scaleOption, responseOption);
     
-    if result(currentQuestion).isCancelQuestion ==1
+    if result(iQuestion).isCancelQuestion ==1
         iQuestion = max(1, iQuestion -1);
     else
         iQuestion = iQuestion +1;

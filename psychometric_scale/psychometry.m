@@ -131,23 +131,7 @@ for iList = 1:numel(list)
     aga.listQuestion=psychometryStuff.(test_name).listQuestion;
     aga.listAnswer=psychometryStuff.(test_name).listAnswer;
     nItems = max([size(aga.listQuestion,1),size(aga.listAnswer,1)]);
-    if random_item
-        if numel(aga.listQuestion)~=1
-            permutation = randperm(numel(aga.listQuestion));
-            aga.listQuestion = aga.listQuestion(permutation) ;
-        else
-            permutation = randperm(size(aga.listAnswer,1));
-            aga.listAnswer = aga.listAnswer(permutation,:)  ;
-        end
-        if size(aga.listQuestion,1)==size(aga.listAnswer,1)
-            aga.listAnswer = aga.listAnswer(permutation,:)  ;
-        elseif size(aga.listQuestion,1)==size(aga.listAnswer,2)
-            aga.listAnswer = aga.listAnswer(:,permutation)  ;
-        end
-    else
-        permutation = [1:nItems];
-    end
-    data.psychometry.(test_name).permutation = permutation;
+
     
     switch test_name
         case {'NORRIS','CUSTOM_EVA'} % EVA - response format
@@ -159,7 +143,8 @@ for iList = 1:numel(list)
             questionOption.y = 0.25;
             scaleOption.y = 0.75;    
             questionOption.labelY=0.8;
-            data.psychometry.(test_name).responses = askEVA(aga,questionOption,displayOption, scaleOption, key);
+            miscOption.isRandomizeQuestionOrder = random_item;
+            [data.psychometry.(test_name).responses, data.psychometry.(test_name).orderQuestion] = askEVA(aga,questionOption,displayOption, scaleOption, key, miscOption);
         case {'SSMQ', 'GSE'}   
             scaleOption.arrow.image=listImage.psychometry.arrow;
             scaleOption.nBar=length(aga.listAnswer);  
@@ -168,15 +153,17 @@ for iList = 1:numel(list)
             questionOption.y = 0.25;
             scaleOption.y = 0.5;    
             questionOption.labelY=0.65;
-            data.psychometry.(test_name).responses = askEVA(aga,questionOption,displayOption, scaleOption, key);
+            miscOption.isRandomizeQuestionOrder = random_item;
+            [data.psychometry.(test_name).responses, data.psychometry.(test_name).orderQuestion] = askEVA(aga,questionOption,displayOption, scaleOption, key, miscOption);
             
         otherwise % multiple choice - response format
             aga.caseN=listImage.psychometry.case;
             aga.caseV=listImage.psychometry.caseV;
-            data.psychometry.(test_name).responses = askPsychometricScale(aga , displayOption, key );
+            miscOption.isRandomizeQuestionOrder = random_item;
+            [data.psychometry.(test_name).responses, data.psychometry.(test_name).orderQuestion] = askPsychometricScale(aga , displayOption, key, miscOption );
     end
     data.psychometry.(test_name).result =  data.psychometry.(test_name).responses;
-    data.psychometry.(test_name).result(permutation) =  data.psychometry.(test_name).responses;
+
     KbReleaseWait;
 end
 
@@ -194,7 +181,7 @@ if  ismember('POMS',list)
     data.psychometry.POMS.Vigor = sum(data.psychometry.POMS.result([7 15 19 38 51 56 60 63]) - 1 ) ;
     data.psychometry.POMS.Interpersonal = sum(data.psychometry.POMS.result([1 6 13 25 30 43 55]) - 1 );
     data.psychometry.POMS.Global = sum([ data.psychometry.POMS.Anxiety, data.psychometry.POMS.Anger, data.psychometry.POMS.Confusion,...
-                                         data.psychometry.POMS.Depression, data.psychometry.POMS.Fatigue ]) -  data.psychometry.POMS.Vigor;
+    data.psychometry.POMS.Depression, data.psychometry.POMS.Fatigue ]) -  data.psychometry.POMS.Vigor;
 end
 
 % BFI
