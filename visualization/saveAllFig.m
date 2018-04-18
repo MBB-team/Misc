@@ -1,4 +1,8 @@
-function [ F ] = saveAllFig()
+function [ F ] = saveAllFig(fmt)
+
+    if nargin<1
+        fmt = 'meta';
+    end
 
     F = findobj('Type','figure');
     for iF = 1:numel(F)
@@ -16,7 +20,7 @@ function [ F ] = saveAllFig()
 
         
         savefig(F(iF),F(iF).Name);
-        saveas(F(iF),F(iF).Name,'tiff') ;
+        saveas(F(iF),F(iF).Name,fmt) ;
     end
 
 end
