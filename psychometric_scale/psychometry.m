@@ -22,7 +22,7 @@ function [] = psychometry(varargin)
 %           'IMI'        -   Intrinsic Motivation Inventory. normal motivation state
 %       fullscreen - display in fullscreen mode(1) or not (0) (logical)
 %       random_item - randomize the order of item within questionaires (1)
-%                     or not (0)(logical) Warning : does not work / do not use.
+%                     or not (0)(logical)
 %       random_test - randomize the order of questionaires (1)
 %                     or not (0)(logical)
 %       resultdit - where do you want to store results
@@ -46,6 +46,9 @@ function [] = psychometry(varargin)
 
 %% Configuration
 % -----------------------------------------------
+
+
+%% Default options (that will be replaced by nargin arguments if provided (see set_psychometry_configuration)
 optionList = {'fullscreen','list','random_item','random_test', 'resultdir'};
 inputList = varargin;
 taskName = 'psychometry';
@@ -55,6 +58,7 @@ list={'NORRIS',...
 random_item=0;
 random_test=0;
 set_psychometry_configuration;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 displayOption.win = display.window;
 displayOption.bound =Screen('Rect', display.window );
