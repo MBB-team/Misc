@@ -136,3 +136,19 @@ end
 %-----------------------------------------------
 rand('state',sum(100*clock));
 
+% Tracker (Mouse/Touchscreen) Configuration
+%-----------------------------------------------
+if exist('mouse')==1
+    if mouse 
+        ShowCursor;
+        wait4release = @() MouseReleaseWait;
+        recordResponse = @(window) GetMouse(window);
+    end
+end
+if exist('touch')==1
+    if touch
+        wait4release = @() TouchReleaseWait;
+        recordResponse = @(window) GetMouseTransient(window,1);
+    end
+end
+
