@@ -167,7 +167,9 @@ while iQ <= nQuestion
             [k, timedown, KeyCode, d] = KbCheck;
             isValidated = KeyCode(key.valid) ;
         else
-            [k, timedown, KeyCode, d] = KbCheck;
+            if isValidated
+                WaitSecs(0.5); 
+            end
         end
         
         if isGoBackAllowed == 1
@@ -177,9 +179,6 @@ while iQ <= nQuestion
              end
         end
         Screen(displayOption.win, 'Flip');
-        if isValidated
-            WaitSecs(0.5); % leave time to have feedback on the selected answer
-        end
     end
         
     KbReleaseWait;

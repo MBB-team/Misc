@@ -16,8 +16,8 @@ function [] = psychometry(varargin)
 %           'BIS'        -   BIS/BAS scale normal affective sensitivity trait
 %           'BARATT'     -   Barratt impulsiveness scale : normal impulsivity trait
 %           'STARKSTEIN' -   Starkstein apathy scale : pathological apathy state
-%           'LAY'        -   Lay procrastination scale normal procrastination trait
-%           'HAD'        -  ???? pathological anxiety & depression state (WARNING : under development)
+%           'LAY'        -   Lay procrastination scale : normal procrastination trait
+%           'HAD'        -   Hospitalisation Anxiety Depression scale: pathological anxiety & depression state (WARNING : under development)
 %           'POMS'       -   Profil of Mood States. normal mood state 
 %           'IMI'        -   Intrinsic Motivation Inventory. normal motivation state
 %           'SHAPS'      -   Snaith Hamilton Pleasure Scale (pathological anhedonia scale)
@@ -56,7 +56,7 @@ function [] = psychometry(varargin)
 
 
 %% Default options (that will be replaced by nargin arguments if provided (see set_psychometry_configuration)
-optionList = {'fullscreen','list','random_item','random_test', 'resultdir'};
+optionList = {'fullscreen','list','random_item','random_test', 'resultdir','mouse','touch'};
 inputList = varargin;
 taskName = 'psychometry';
 fullscreen=1;
@@ -64,10 +64,18 @@ list={'NORRIS',...
       'POMS'};
 random_item=0;
 random_test=0;
+mouse=0;
+touch=0;
 set_psychometry_configuration;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 displayOption.win = display.window;
+displayOption.mouse = mouse;
+displayOption.touch = touch;
+if displayOption.mouse || displayOption.touch
+   displayOption.wait4release = wait4release;
+   displayOption.recordResponse = recordResponse; 
+end
 displayOption.bound =Screen('Rect', display.window );
 displayOption.screenX=displayOption.bound(3)-displayOption.bound(1);
 displayOption.screenY=displayOption.bound(4)-displayOption.bound(2);
