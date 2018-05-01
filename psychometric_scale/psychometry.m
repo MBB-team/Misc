@@ -28,10 +28,8 @@ function [] = psychometry(varargin)
 %           'SSMQ'       -   Squire Subjective Memory Questionnaire (adapted for ECT)
 %           'GSE'        -   General Self-Efficacy Scale (adapted for ECT)   
 %       fullscreen - display in fullscreen mode(1) or not (0) (logical)
-%       random_item - randomize the order of item within questionaires (1)
-%                     or not (0)(logical)
-%       random_test - randomize the order of questionaires (1)
-%                     or not (0)(logical)
+%       random_item - randomize the order of item within questionaires (1) or not (0)(logical)           
+%       random_test - randomize the order of questionaires (1) or not (0)(logical)              
 %       resultdit - where do you want to store results
 % Outputs:
 %
@@ -49,7 +47,7 @@ function [] = psychometry(varargin)
 %
 % Nicolas Borderies
 % email address: nico.borderies@gmail.com 
-% April 2016; Last revision: June 2017
+% April 2016; Last revision: May 2018
 
 %% Configuration
 % -----------------------------------------------

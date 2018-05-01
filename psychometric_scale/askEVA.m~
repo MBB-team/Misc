@@ -89,12 +89,10 @@ while iQuestion <= nQuestion
         iQuestion = iQuestion +1;
     end
     
-    [k, timedown, KeyCode, d] = KbCheck;
-    KeyCode = KeyCode * 0;
     if iQuestion == nQuestion +1
         Screen('FillRect',displayOption.win,255 - scaleOption.color, displayOption.screenXY);
         text= 'Appuyez sur n''importe quelle touche pour continuer.';
-        [nx, ny]= DrawFormattedText(displayOption.win, double(text), 'center', 'center', scaleOption.color);
+        [nx, ny]= DrawFormattedText(displayOption.win, double(text), 'center', 1/2*centerY, scaleOption.color, nMaxCharacter);
         Screen(displayOption.win, 'Flip');
         while  any(KeyCode) == 0
             [k, timedown, KeyCode, d] = KbCheck;

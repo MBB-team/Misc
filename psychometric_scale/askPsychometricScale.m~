@@ -192,7 +192,7 @@ while iQ <= nQuestion
         iQ = iQ+1;
     end
     
-    if iQ == nQuestion +1
+    if iQ == nQuestion
         Screen('FillRect',displayOption.win,miscOption.color.back, displayOption.screenXY);
         text= 'Appuyez sur n''importe quelle touche pour continuer.';
         [nx, ny]= DrawFormattedText(displayOption.win, double(text), 'center', 1/2*centerY, miscOption.color.text, nMaxCharacter);
@@ -200,10 +200,10 @@ while iQ <= nQuestion
         while  any(KeyCode) == 0
             [k, timedown, KeyCode, d] = KbCheck;
             if (KeyCode(key.back) == 1)
-                iQ = nQuestion;
+                iQ = max(1, iQ-1);
             end
+            KbReleaseWait;
         end
-        KbReleaseWait;
     end
     
 end
