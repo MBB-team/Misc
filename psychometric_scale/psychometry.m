@@ -86,6 +86,14 @@ Screen('FillRect',displayOption.win,[0 0 0]);
 Screen('TextSize', displayOption.win , 30); 
 Screen('TextFont', displayOption.win, 'Helvetica');
 
+% drawtext renderer option
+versionName=PsychtoolboxVersion;
+if strcmp(versionName(1:6),'3.0.14')
+    displayOption.caseYShift = 1/4 ;
+else
+    displayOption.caseYShift = 1 ;
+end
+
 %% Test preparation
 % ----------------------------------------------
 

@@ -123,7 +123,6 @@ while iQ <= nQuestion
         Screen('FillRect',displayOption.win,miscOption.color.back, displayOption.screenXY);
         text= [stuff.listQuestion{currentQ}];
         [nx, ny]= DrawFormattedText(displayOption.win, double(text), 1/16*centerX, 1/2*centerY, miscOption.color.text, nMaxCharacter);
-        %DrawFormattedText(displayOption.win, double(text), 'center', 1/2*centerY, miscOption.color.text);
         
         if displayOption.mouse || displayOption.touch
             [xMouse,yMouse,buttons] = displayOption.recordResponse(displayOption.win);
@@ -149,7 +148,7 @@ while iQ <= nQuestion
             end
             text = double(answer{iA});
             sx = caseBox(3) + caseXYD(3);
-            sy = caseBox(4) - caseXYD(3)/4;
+            sy = caseBox(4) - displayOption.caseYShift*caseXYD(3);
             [nx, ny] =DrawFormattedText(displayOption.win, text, sx,sy,miscOption.color.text, nMaxCharacter);
             shift = ny + 1.5* caseXYD(3);
             
