@@ -93,26 +93,47 @@ function [logAnswer] = askQuestion2( questionOption, displayOption, scaleOption,
     
     %% Print question until answer
     logAnswer.isCancelQuestion = 0;
+    isValidated = 0;
+    if displayOption.mouse || displayOption.touch
+        displayOption.wait4release;
+        scaleBox = displayLikert(displayOption.win,displayOption.centerX,displayOption.screenY,[]);
+    end
     
-    while (GetSecs < (responseOption.t0 + responseOption.maxTime)) & isAnswer ==0
+    while (GetSecs < (responseOption.t0 + responseOption.maxTime)) && isAnswer ==0
         
         %% Get input and move cursor
          [k, timePress, KeyCode, d] = KbCheck(-1);
-        if (KeyCode(key.left) == 1)
-            iCurseur=max(1,iCurseur-1);
-            logAnswer.timePress(end+1)=timePress;
-            logAnswer.sidePress(end+1)=-1;
-            %KbReleaseWait([],logAnswer.timePress(end)+responseOption.timeBlock);
-            WaitSecs(responseOption.timeBlock);
+         if ~(displayOption.mouse || displayOption.touch)
+            if (KeyCode(key.left) == 1)
+                iCurseur=max(1,iCurseur-1);
+                logAnswer.timePress(end+1)=timePress;
+                logAnswer.sidePress(end+1)=-1;
+                %KbReleaseWait([],logAnswer.timePress(end)+responseOption.timeBlock);
+                WaitSecs(responseOption.timeBlock);
+            end
+            if (KeyCode(key.right) == 1)
+                iCurseur=min(scaleOption.nBar,iCurseur+1);
+                logAnswer.timePress(end+1)=timePress;
+                logAnswer.sidePress(end+1)=1;
+                %KbReleaseWait([],logAnswer.timePress(end)+responseOption.timeBlock);
+                WaitSecs(responseOption.timeBlock);
+            end   
+            isValidated = KeyCode(key.valid) ;
+         end
+        
+         % get mouse/touch response
+         if displayOption.mouse || displayOption.touch
+             [xMouse,yMouse,buttons] = displayOption.recordResponse(displayOption.win);
+            if isInsideTheBox([xMouse,yMouse],scaleBox) && buttons(1)~=0
+%             if  buttons(1)~=0
+                iCurseur = 0 + (xMouse - scaleBox(1)) / (scaleBox(3)-scaleBox(1))*100;
+                iCurseur = round(max([min([iCurseur,100]),0]));
+                logAnswer.timePress(end+1)=timePress;
+                logAnswer.sidePress(end+1)=1;
+                isValidated = 1;
+            end
         end
-        if (KeyCode(key.right) == 1)
-            iCurseur=min(scaleOption.nBar,iCurseur+1);
-            logAnswer.timePress(end+1)=timePress;
-            logAnswer.sidePress(end+1)=1;
-            %KbReleaseWait([],logAnswer.timePress(end)+responseOption.timeBlock);
-            WaitSecs(responseOption.timeBlock);
-        end   
-         
+
        if isGoBackAllowed == 1
              if (KeyCode(key.back) == 1)
                  logAnswer.isCancelQuestion = 1;
@@ -123,7 +144,7 @@ function [logAnswer] = askQuestion2( questionOption, displayOption, scaleOption,
         
         %% Get validation
         
-        if (KeyCode(key.valid) == 1)
+        if isValidated
             isAnswer=1;
             logAnswer.timePress(end+1)=timePress;
             logAnswer.sidePress(end+1)=2;
@@ -151,20 +172,38 @@ function [logAnswer] = askQuestion2( questionOption, displayOption, scaleOption,
         %% This line should be changed...
         Screen('FillRect',displayOption.win,255 - scaleOption.color, displayOption.screenXY);
         
-        %% Print question
-        DrawFormattedText(displayOption.win, double(questionOption.question), 'center', y0 + questionOption.y * Y, scaleOption.color, nMaxCharacter);
+        if displayOption.mouse || displayOption.touch
+            displayScale_2(displayOption.win,displayOption.screenX,displayOption.screenY,...
+                                     questionOption.question,questionOption.label);
+            displayLikert(displayOption.win,displayOption.centerX,displayOption.screenY,[]);
+            Screen(displayOption.win, 'Flip');
+        else
+            %% Print question
+            DrawFormattedText(displayOption.win, double(questionOption.question), 'center', y0 + questionOption.y * Y, scaleOption.color, nMaxCharacter);
+
+            %% Print scale
+            scaleOption.arrow.position=iCurseur;
+            scaleOption.labelY = questionOption.labelY;
+            displayScale(displayOption.win, displayOption.screenXY, scaleOption);
+            Screen(displayOption.win, 'Flip');
+        end
         
-        %% Print scale
-        scaleOption.arrow.position=iCurseur;
-        scaleOption.labelY = questionOption.labelY;
-        displayScale(displayOption.win, displayOption.screenXY, scaleOption);
+    end
+    
+    %% display confirmation
+    if displayOption.mouse || displayOption.touch
+        displayScale_2(displayOption.win,displayOption.screenX,displayOption.screenY,...
+                         questionOption.question,questionOption.label);
+        displayLikert(displayOption.win,displayOption.centerX,displayOption.screenY,logAnswer.finalPosition);
+        WaitSecs(0.5);
         Screen(displayOption.win, 'Flip');
     end
+    
     
     logAnswer.currentPosition=iCurseur;
     logAnswer.FinalPercentage=(iCurseur-1) / (scaleOption.nBar-1);
     
-    if (GetSecs > (responseOption.t0 + responseOption.maxTime)) & isfield(responseOption, 'tooLateFeedback')
+    if (GetSecs > (responseOption.t0 + responseOption.maxTime)) && isfield(responseOption, 'tooLateFeedback')
         DrawFormattedText(displayOption.win, responseOption.tooLateFeedback.feedback, 'center', 'center', scaleOption.color);
         vbl=Screen(displayOption.win, 'Flip');
         Screen(displayOption.win, 'Flip', vbl + responseOption.tooLateFeedback.duration);
