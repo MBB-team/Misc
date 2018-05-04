@@ -72,8 +72,11 @@ dim.n_phi = p+d;
 dim.n_t = 1;
 dim.p = n;
 priors.muPhi = zeros(dim.n_phi,1);
-sigma = min([nanstd(y)*ones(1,dim.n_phi).*(nanvar(y)./nanvar(X)) ; 
-             nanstd(y)*ones(1,dim.n_phi) ]);
+sigma = min([nanstd(y)*ones(1,p).*(nanvar(y)./nanvar(X)) ; 
+             nanstd(y)*ones(1,p) ]);
+if d>0
+    sigma = [sigma , mean(sigma).*ones(1,d)];
+end
 if sparsity
     sigma = 1e0.*ones(1,dim.n_phi);
 end
