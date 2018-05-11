@@ -152,7 +152,10 @@ function [logAnswer] = askQuestion2( questionOption, displayOption, scaleOption,
             logAnswer.timeFirstPress = logAnswer.timePress(1) - responseOption.t0;
             logAnswer.RT = logAnswer.timePress(end) - responseOption.t0;
             logAnswer.finalPosition=iCurseur;
-            KbReleaseWait(-1);
+            if ~(displayOption.mouse || displayOption.touch)
+                KbReleaseWait(-1);
+                displayOption.wait4release;
+            end
         end
         
         
@@ -195,8 +198,8 @@ function [logAnswer] = askQuestion2( questionOption, displayOption, scaleOption,
         displayScale_2(displayOption.win,displayOption.screenX,displayOption.screenY,...
                          questionOption.question,questionOption.label);
         displayLikert(displayOption.win,displayOption.centerX,displayOption.screenY,logAnswer.finalPosition);
-        WaitSecs(0.5);
         Screen(displayOption.win, 'Flip');
+        WaitSecs(0.5);
     end
     
     
