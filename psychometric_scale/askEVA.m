@@ -81,6 +81,7 @@ while iQuestion <= nQuestion
     
     questionOption.question = stuff.listQuestion{currentQuestion};
     questionOption.label=stuff.listAnswer(currentQuestion,:);
+    
     result(currentQuestion)=askQuestion(questionOption, displayOption, scaleOption, responseOption);
     
     if result(currentQuestion).isCancelQuestion ==1

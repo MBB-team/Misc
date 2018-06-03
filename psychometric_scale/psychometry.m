@@ -26,7 +26,8 @@ function [] = psychometry(varargin)
 %           'CTQ'        -   Childhood Trauma Questionnaire
 %           'SF36'       -   Short Form (36) Health Survey
 %           'SSMQ'       -   Squire Subjective Memory Questionnaire (adapted for ECT)
-%           'GSE'        -   General Self-Efficacy Scale (adapted for ECT)   
+%           'GSE'        -   General Self-Efficacy Scale (adapted for ECT)  
+%           'LAPS'       -   Leuven Affect and Pleasure Scale 1
 %       fullscreen - display in fullscreen mode(1) or not (0) (logical)
 %       random_item - randomize the order of item within questionaires (1) or not (0)(logical)           
 %       random_test - randomize the order of questionaires (1) or not (0)(logical)              
@@ -62,7 +63,7 @@ list={'NORRIS',...
       'POMS'};
 random_item=0;
 random_test=0;
-mouse=0;
+mouse=1;
 touch=0;
 set_psychometry_configuration;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -132,6 +133,14 @@ for iList = 1:numel(list)
                 aga=struct;
                 [~, aga.([test_name '_Q' ])] = xlsread([ test_name '.xlsx'], 1);
                 [~, aga.([test_name '_R' ])] = xlsread([ test_name '.xlsx'], 2);
+        case {'LAPS'} 
+             aga=imread([psychodir filesep  'stuff' filesep 'graphicLAPS.png']);
+             scaleOption.graphicScale.ratio = size(aga, 1) / size(aga, 2);
+             listImage.psychometry.LAPS=Screen('MakeTexture',displayOption.win,aga);
+             aga=struct;
+             [~, aga.([test_name '_Q' ])] = xlsread([ test_name '.xlsx'], 1);
+             [~, aga.([test_name '_R' ])] = xlsread([ test_name '.xlsx'], 2);
+       
         otherwise
             aga = load ([psychodir filesep 'stuff' filesep test_name '.mat']);
     end
@@ -180,7 +189,18 @@ for iList = 1:numel(list)
             questionOption.labelY=0.65;
             miscOption.isRandomizeQuestionOrder = random_item;
             [data.psychometry.(test_name).responses, data.psychometry.(test_name).orderQuestion] = askEVA(aga,questionOption,displayOption, scaleOption, key, miscOption);
-            
+         case {'LAPS'}   
+            scaleOption.arrow.image=listImage.psychometry.arrow;
+            scaleOption.nBar=length(aga.listAnswer);  
+            scaleOption.arrow.y = -1/8;    % Position of the arrow (in % of screen), the 0 is the position of the scale (should be in dimension option but kept for compatibility)
+            scaleOption.arrow.size = 1/50; % SIze of the arrow
+            questionOption.y = 0.25;
+            scaleOption.y = 0.65;    
+            questionOption.labelY=0.80;
+            miscOption.isRandomizeQuestionOrder = random_item;
+            scaleOption.graphicScale.texture = listImage.psychometry.LAPS;
+            [data.psychometry.(test_name).responses, data.psychometry.(test_name).orderQuestion] = askEVA(aga,questionOption,displayOption, scaleOption, key, miscOption);
+    
         otherwise % multiple choice - response format
             aga.caseN=listImage.psychometry.case;
             aga.caseV=listImage.psychometry.caseV;
