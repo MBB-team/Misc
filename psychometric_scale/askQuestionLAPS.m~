@@ -96,7 +96,7 @@ function [logAnswer] = askQuestion2( questionOption, displayOption, scaleOption,
     isValidated = 0;
     if displayOption.mouse || displayOption.touch
         displayOption.wait4release;
-        scaleBox = displayScaleTactile(displayOption.win, displayOption.screenXY, scaleOption, []);
+        scaleBox = displayLikert(displayOption.win,displayOption.centerX,displayOption.screenY,[]);
     end
     
     while (GetSecs < (responseOption.t0 + responseOption.maxTime)) && isAnswer ==0
@@ -127,7 +127,7 @@ function [logAnswer] = askQuestion2( questionOption, displayOption, scaleOption,
             if isInsideTheBox([xMouse,yMouse],scaleBox) && buttons(1)~=0
 %             if  buttons(1)~=0
                 iCurseur = 0 + (xMouse - scaleBox(1)) / (scaleBox(3)-scaleBox(1))*100;
-                iCurseur = max([min([iCurseur,100]),0]);
+                iCurseur = round(max([min([iCurseur,100]),0]));
                 logAnswer.timePress(end+1)=timePress;
                 logAnswer.sidePress(end+1)=1;
                 isValidated = 1;
@@ -175,16 +175,20 @@ function [logAnswer] = askQuestion2( questionOption, displayOption, scaleOption,
         %% This line should be changed...
         Screen('FillRect',displayOption.win,255 - scaleOption.color, displayOption.screenXY);
         
-         %% Print question
-         DrawFormattedText(displayOption.win, double(questionOption.question), 'center', y0 + questionOption.y * Y, scaleOption.color, nMaxCharacter);
-
-         
-        %% Print scale 
+        
+        
+        
+        
         if displayOption.mouse || displayOption.touch
-            scaleOption.labelY = questionOption.labelY;
-            displayScaleTactile(displayOption.win, displayOption.screenXY, scaleOption, []);
+            displayScale_2(displayOption.win,displayOption.screenX,displayOption.screenY,...
+                                     questionOption.question,questionOption.label);
+            displayLikert(displayOption.win,displayOption.centerX,displayOption.screenY,[]);
             Screen(displayOption.win, 'Flip');
         else
+            %% Print question
+            DrawFormattedText(displayOption.win, double(questionOption.question), 'center', y0 + questionOption.y * Y, scaleOption.color, nMaxCharacter);
+
+            %% Print scale
             scaleOption.arrow.position=iCurseur;
             scaleOption.labelY = questionOption.labelY;
             displayScale(displayOption.win, displayOption.screenXY, scaleOption);
@@ -195,9 +199,9 @@ function [logAnswer] = askQuestion2( questionOption, displayOption, scaleOption,
     
     %% display confirmation
     if displayOption.mouse || displayOption.touch
-        DrawFormattedText(displayOption.win, double(questionOption.question), 'center', y0 + questionOption.y * Y, scaleOption.color, nMaxCharacter);
-        scaleOption.labelY = questionOption.labelY;
-        displayScaleTactile(displayOption.win, displayOption.screenXY, scaleOption, logAnswer.finalPosition);
+        displayScale_2(displayOption.win,displayOption.screenX,displayOption.screenY,...
+                         questionOption.question,questionOption.label);
+        displayLikert(displayOption.win,displayOption.centerX,displayOption.screenY,logAnswer.finalPosition);
         Screen(displayOption.win, 'Flip');
         WaitSecs(0.5);
     end
