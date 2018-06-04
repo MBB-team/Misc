@@ -118,7 +118,6 @@ listImage.psychometry.caseV=Screen('MakeTexture',displayOption.win,aga);
 % Load psychometry stuff
 for iList = 1:numel(list)
     test_name = list{iList};
-    test_name
     switch test_name
         case {'POMS','IMI'}
             try
