@@ -128,7 +128,7 @@ for iList = 1:numel(list)
             catch
                 aga = load ([psychodir filesep 'stuff' filesep test_name '.mat']);
             end
-        case {'IDSSR30', 'CTQ', 'SHAPS', 'QLESQ', 'SF36', 'SSMQ', 'GSE'}
+        case {'IDSSR30','HAD2','CTQ','CFQ','SSMQ','GSE','QLESQ','SF36','SHAPS','STARKSTEIN2','FSS','ASRM'}
                 aga=struct;
                 [~, aga.([test_name '_Q' ])] = xlsread([ test_name '.xlsx'], 1);
                 [~, aga.([test_name '_R' ])] = xlsread([ test_name '.xlsx'], 2);
@@ -178,7 +178,7 @@ for iList = 1:numel(list)
             questionOption.labelY=0.8;
             miscOption.isRandomizeQuestionOrder = random_item;
             [data.psychometry.(test_name).responses, data.psychometry.(test_name).orderQuestion] = askEVA(aga,questionOption,displayOption, scaleOption, key, miscOption);
-        case {'SSMQ', 'GSE'}   
+        case {'SSMQ', 'GSE','FSS'}   
             scaleOption.arrow.image=listImage.psychometry.arrow;
             scaleOption.nBar=length(aga.listAnswer);  
             scaleOption.arrow.y = -1/8;    % Position of the arrow (in % of screen), the 0 is the position of the scale (should be in dimension option but kept for compatibility)
