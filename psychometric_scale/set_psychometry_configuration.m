@@ -123,6 +123,9 @@ key.space = KbName('Space') ;
 key.valid = KbName('Space');
 key.escape = KbName('ESCAPE') ;
 key.back = KbName('c') ;
+key.yes = KbName('y') ;
+key.no = KbName('n') ;
+
 %key.clear = KbName('BackSpace') ;
 if exist('laptop')
     if laptop

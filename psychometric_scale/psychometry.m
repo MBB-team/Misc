@@ -159,55 +159,72 @@ end
 data.testList = random_list;
 
 for iList = 1:numel(list)
+    
+    % ask experimenter for conducting questionaire or not
     test_name = random_list{iList};
-    aga.instruction=listImage.psychometry.(['instruction' test_name ]);
-    aga.listQuestion=psychometryStuff.(test_name).listQuestion;
-    aga.listAnswer=psychometryStuff.(test_name).listAnswer;
-    nItems = max([size(aga.listQuestion,1),size(aga.listAnswer,1)]);
-
-    
-    switch test_name
-        case {'NORRIS','CUSTOM_EVA'} % EVA - response format
-            scaleOption.arrow.image=listImage.psychometry.arrow;
-            scaleOption.nBar=21;          % For mood and confidence ratings, the scale is divided in nBar possible answers
-            scaleOption.arrow.y = -1/8;    % Position of the arrow (in % of screen), the 0 is the position of the scale (should be in dimension option but kept for compatibility)
-            scaleOption.arrow.size = 1/50; % SIze of the arrow
-            scaleOption.lVisibleBar=[];
-            questionOption.y = 0.25;
-            scaleOption.y = 0.75;    
-            questionOption.labelY=0.8;
-            miscOption.isRandomizeQuestionOrder = random_item;
-            [data.psychometry.(test_name).responses, data.psychometry.(test_name).orderQuestion] = askEVA(aga,questionOption,displayOption, scaleOption, key, miscOption);
-        case {'SSMQ', 'GSE','FSS'}   
-            scaleOption.arrow.image=listImage.psychometry.arrow;
-            scaleOption.nBar=length(aga.listAnswer);  
-            scaleOption.arrow.y = -1/8;    % Position of the arrow (in % of screen), the 0 is the position of the scale (should be in dimension option but kept for compatibility)
-            scaleOption.arrow.size = 1/50; % SIze of the arrow
-            questionOption.y = 0.25;
-            scaleOption.y = 0.5;    
-            questionOption.labelY=0.65;
-            miscOption.isRandomizeQuestionOrder = random_item;
-            [data.psychometry.(test_name).responses, data.psychometry.(test_name).orderQuestion] = askEVA(aga,questionOption,displayOption, scaleOption, key, miscOption);
-         case {'LAPS'}   
-            scaleOption.arrow.image=listImage.psychometry.arrow;
-            scaleOption.nBar=length(aga.listAnswer);  
-            scaleOption.arrow.y = -1/8;    % Position of the arrow (in % of screen), the 0 is the position of the scale (should be in dimension option but kept for compatibility)
-            scaleOption.arrow.size = 1/50; % SIze of the arrow
-            questionOption.y = 0.25;
-            scaleOption.y = 0.65;    
-            questionOption.labelY=0.80;
-            miscOption.isRandomizeQuestionOrder = random_item;
-            scaleOption.graphicScale.texture = listImage.psychometry.LAPS;
-            [data.psychometry.(test_name).responses, data.psychometry.(test_name).orderQuestion] = askEVA(aga,questionOption,displayOption, scaleOption, key, miscOption);
-    
-        otherwise % multiple choice - response format
-            aga.caseN=listImage.psychometry.case;
-            aga.caseV=listImage.psychometry.caseV;
-            miscOption.isRandomizeQuestionOrder = random_item;
-            [data.psychometry.(test_name).responses, data.psychometry.(test_name).orderQuestion] = askPsychometricScale(aga , displayOption, key, miscOption );
+    textstring = ['Do you want to perform this questionnaire: ' test_name ' ?[Y=yes/N=no] '];
+    DrawFormattedText(displayOption.win,textstring,'center','center', [255 255 255]);
+    Screen(displayOption.win,'Flip');
+    KbReleaseWait;
+    stop=0;
+    while stop==0
+        [k, timedown, KeyCode, d] = KbCheck;
+        if (KeyCode(key.yes) == 1) || (KeyCode(key.no) == 1) 
+            stop = 1;
+        end
     end
-    data.psychometry.(test_name).result =  data.psychometry.(test_name).responses;
 
+    if (KeyCode(key.yes) == 1)
+
+        aga.instruction=listImage.psychometry.(['instruction' test_name ]);
+        aga.listQuestion=psychometryStuff.(test_name).listQuestion;
+        aga.listAnswer=psychometryStuff.(test_name).listAnswer;
+        nItems = max([size(aga.listQuestion,1),size(aga.listAnswer,1)]);
+
+
+        switch test_name
+            case {'NORRIS','CUSTOM_EVA'} % EVA - response format
+                scaleOption.arrow.image=listImage.psychometry.arrow;
+                scaleOption.nBar=21;          % For mood and confidence ratings, the scale is divided in nBar possible answers
+                scaleOption.arrow.y = -1/8;    % Position of the arrow (in % of screen), the 0 is the position of the scale (should be in dimension option but kept for compatibility)
+                scaleOption.arrow.size = 1/50; % SIze of the arrow
+                scaleOption.lVisibleBar=[];
+                questionOption.y = 0.25;
+                scaleOption.y = 0.75;    
+                questionOption.labelY=0.8;
+                miscOption.isRandomizeQuestionOrder = random_item;
+                [data.psychometry.(test_name).responses, data.psychometry.(test_name).orderQuestion] = askEVA(aga,questionOption,displayOption, scaleOption, key, miscOption);
+            case {'SSMQ', 'GSE','FSS'}   
+                scaleOption.arrow.image=listImage.psychometry.arrow;
+                scaleOption.nBar=length(aga.listAnswer);  
+                scaleOption.arrow.y = -1/8;    % Position of the arrow (in % of screen), the 0 is the position of the scale (should be in dimension option but kept for compatibility)
+                scaleOption.arrow.size = 1/50; % SIze of the arrow
+                questionOption.y = 0.25;
+                scaleOption.y = 0.5;    
+                questionOption.labelY=0.65;
+                miscOption.isRandomizeQuestionOrder = random_item;
+                [data.psychometry.(test_name).responses, data.psychometry.(test_name).orderQuestion] = askEVA(aga,questionOption,displayOption, scaleOption, key, miscOption);
+             case {'LAPS'}   
+                scaleOption.arrow.image=listImage.psychometry.arrow;
+                scaleOption.nBar=length(aga.listAnswer);  
+                scaleOption.arrow.y = -1/8;    % Position of the arrow (in % of screen), the 0 is the position of the scale (should be in dimension option but kept for compatibility)
+                scaleOption.arrow.size = 1/50; % SIze of the arrow
+                questionOption.y = 0.25;
+                scaleOption.y = 0.65;    
+                questionOption.labelY=0.80;
+                miscOption.isRandomizeQuestionOrder = random_item;
+                scaleOption.graphicScale.texture = listImage.psychometry.LAPS;
+                [data.psychometry.(test_name).responses, data.psychometry.(test_name).orderQuestion] = askEVA(aga,questionOption,displayOption, scaleOption, key, miscOption);
+
+            otherwise % multiple choice - response format
+                aga.caseN=listImage.psychometry.case;
+                aga.caseV=listImage.psychometry.caseV;
+                miscOption.isRandomizeQuestionOrder = random_item;
+                [data.psychometry.(test_name).responses, data.psychometry.(test_name).orderQuestion] = askPsychometricScale(aga , displayOption, key, miscOption );
+        end
+        data.psychometry.(test_name).result =  data.psychometry.(test_name).responses;
+    
+    end
     KbReleaseWait;
 end
 
@@ -216,7 +233,7 @@ end
 %-----------------------------------------------
  
 % POMS
-if  ismember('POMS',list)
+if  isfield(data.psychometry,'POMS')
     data.psychometry.POMS.Anxiety = sum(data.psychometry.POMS.result([2 10 16 20 26 27 34 41]) - 1 ) +  sum(5-data.psychometry.POMS.result([22]));
     data.psychometry.POMS.Anger = sum(data.psychometry.POMS.result([3 12 17 24 31 33 39 42 47 52 53 57]) - 1 ) ;
     data.psychometry.POMS.Confusion = sum(data.psychometry.POMS.result([8 28 37 50 59 64]) - 1 ) +  sum(5-data.psychometry.POMS.result([54]));
@@ -229,7 +246,7 @@ if  ismember('POMS',list)
 end
 
 % BFI
-if  ismember('BFI',list)
+if  isfield(data.psychometry,'BFI')
     data.psychometry.BFI.OCEAN(1)=(sum(data.psychometry.BFI.result([5 10 15 20 25 30 40 44]))+ sum(6-data.psychometry.BFI.result([35 41])))/10;
     data.psychometry.BFI.OCEAN(2)=(sum(data.psychometry.BFI.result([3 13 28 33 38]))+ sum(6-data.psychometry.BFI.result([8 18 23 43])))/9;
     data.psychometry.BFI.OCEAN(3)=(sum(data.psychometry.BFI.result([1 11 16 26 36]))+ sum(6-data.psychometry.BFI.result([6 21 31])))/8;
@@ -238,7 +255,7 @@ if  ismember('BFI',list)
 end
 
 % BIS
-if  ismember('BIS',list)
+if  isfield(data.psychometry,'BIS')
     data.psychometry.BIS.BAS_drive=sum(5-data.psychometry.BIS.result([3 9 12 21]));
     data.psychometry.BIS.BAS_funSeeking= sum(5-data.psychometry.BIS.result([5 10 15 20]));
     data.psychometry.BIS.BAS_rewardResponsiveness= sum(5-data.psychometry.BIS.result([4 7 14 18 23]));
@@ -250,7 +267,7 @@ if  ismember('BIS',list)
 end
 
 % BARATT
-if  ismember('BARATT',list)
+if  isfield(data.psychometry,'BARATT')
     data.psychometry.BARATT.total = sum(data.psychometry.BARATT.result);
     data.psychometry.BARATT.BARATT_motor = sum(data.psychometry.BARATT.result([2 3 4 16 17 19 21 22 23 25 30]));
     data.psychometry.BARATT.BARATT_cognitive = sum(data.psychometry.BARATT.result([5 6 9 11 20 24 26 28]));
@@ -258,24 +275,24 @@ if  ismember('BARATT',list)
 end
 
 % STARKSTEIN
-if  ismember('STARKSTEIN',list)
+if  isfield(data.psychometry,'STARKSTEIN')
     data.psychometry.STARKSTEIN.total = sum(4-data.psychometry.STARKSTEIN.result([1:8])) + sum(data.psychometry.STARKSTEIN.result([9:14])-1);
 end
 
 % LAY
-if  ismember('LAY',list)
+if  isfield(data.psychometry,'LAY')
     data.psychometry.LAY.total = sum(data.psychometry.LAY.result([1 2 5 7 9 10 12 16 17 19])) + sum(6-data.psychometry.LAY.result([3 4 6 8 11 13 14 15 18 20]));
 end
 
 % HAD
-if  ismember('HAD',list)
+if  isfield(data.psychometry,'HAD')
     data.psychometry.HAD.total = sum(data.psychometry.HAD.result);
     data.psychometry.HAD.anxietyScore = sum(data.psychometry.HAD.result([1:7]));
     data.psychometry.HAD.depressionScore = sum(data.psychometry.HAD.result([8:14]));
 end
 
 % IMI
-if  ismember('IMI',list)
+if  isfield(data.psychometry,'IMI')
     data.psychometry.IMI.total = sum(data.psychometry.IMI.result([1 3:8 10 12 13 15:18 20 22])) +  sum(8-data.psychometry.IMI.result([2 9 11 14 19 21]));
     data.psychometry.IMI.Interest = sum(data.psychometry.IMI.result([1 5 8 10 17 20])) +  sum(8-data.psychometry.IMI.result([14])) ;
     data.psychometry.IMI.SelfCompetence = sum(data.psychometry.IMI.result([4 7 12 16 22]))  ;

@@ -77,7 +77,7 @@ else
 end
 scaleBox= [scaleDim(1) scaleDim(2)-hBox scaleDim(3) scaleDim(2)+hBox];
 
-if isfield(scaleOption, 'graphicScale');
+if isfield(scaleOption.graphicScale, 'texture');
     Screen('DrawTexture',wPtr,scaleOption.graphicScale.texture, [], scaleBox);
 else  
     for iBox = 1:scaleOption.nBar
@@ -98,7 +98,7 @@ if ~isempty(rating)
     iRating = sum(rating >= (linspace(0, 101, scaleOption.nBar+1)));
     box = [scaleDim(1)+(iRating-1)*wBox scaleDim(2)-hBox scaleDim(1)+(iRating)*wBox scaleDim(2)+hBox];
     xCrossLine = [scaleDim(1)+rating/100*wBox*scaleOption.nBar];
-    if isVisibleBar(iBox) == 1
+    if any(isVisibleBar) == 1
         Screen('FillRect', wPtr,[0 255 0], box);
     else
         Screen('DrawLine', wPtr,[0 255 0],xCrossLine, box(2), xCrossLine, box(4) ,scaleOption.e);

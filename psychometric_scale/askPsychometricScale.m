@@ -136,7 +136,7 @@ while iQ <= nQuestion
                 if isInsideTheBox([xMouse,yMouse],caseBox) && buttons(1)~=0
                     chosenAnswer = iA;
                     isValidated = 1;
-                else
+                elseif isValidated==0
                     chosenAnswer = 0; % no pre-selected answer with tactile/mouse version
                 end
             end
