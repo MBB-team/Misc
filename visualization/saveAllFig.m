@@ -18,9 +18,11 @@ function [ F ] = saveAllFig(fmt)
 %         F(iF).PaperUnits = 'normalized';
         F(iF).PaperPosition = [ 0 0 dim([3,4]) ];
 
-        
-        savefig(F(iF),F(iF).Name);
+        F(iF).Color = 'none';
+%         savefig(F(iF),F(iF).Name);
         saveas(F(iF),F(iF).Name,fmt) ;
+        F(iF).Color = 'w';
+
     end
 
 end
