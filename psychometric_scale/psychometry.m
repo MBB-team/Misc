@@ -160,21 +160,52 @@ data.testList = random_list;
 
 for iList = 1:numel(list)
     
-    % ask experimenter for conducting questionaire or not
-    test_name = random_list{iList};
-    textstring = ['Do you want to perform this questionnaire: ' test_name ' ?[Y=yes/N=no] '];
-    DrawFormattedText(displayOption.win,textstring,'center','center', [255 255 255]);
-    Screen(displayOption.win,'Flip');
-    KbReleaseWait;
-    stop=0;
-    while stop==0
+      %% Explicitely ask to what extent a questionnaire should be performed
+%     % ask experimenter for conducting questionaire or not
+%     test_name = random_list{iList};
+%     textstring = ['Do you want to perform this questionnaire: ' test_name ' ?[Y=yes/N=no] '];
+%     DrawFormattedText(displayOption.win,textstring,'center','center', [255 255 255]);
+%     Screen(displayOption.win,'Flip');
+%     KbReleaseWait;
+%     stop=0;
+%     while stop==0
+%         [k, timedown, KeyCode, d] = KbCheck;
+%         if (KeyCode(key.yes) == 1) || (KeyCode(key.no) == 1) 
+%             stop = 1;
+%         end
+%     end
+
+    
+     %% Just display the name of the scale (press 'n' to skip), any other cue to resume
+     test_name = random_list{iList};
+     textstring = ['Questionnaire: ' test_name ];
+     DrawFormattedText(displayOption.win,textstring,'center','center', [255 255 255]);
+     Screen(displayOption.win,'Flip');
+     KbReleaseWait;
+     stop=0;
+     while stop==0
         [k, timedown, KeyCode, d] = KbCheck;
-        if (KeyCode(key.yes) == 1) || (KeyCode(key.no) == 1) 
+        if displayOption.mouse || displayOption.touch
+            [xMouse,yMouse,buttons] = displayOption.recordResponse(displayOption.win);
+        else
+            buttons = 0;
+        end
+        if KeyCode(key.no) == 1
+            skipScale = 1;
+            stop = 1;
+        elseif (any(KeyCode)==1) || any(buttons) == 1
+            skipScale = 0;
             stop = 1;
         end
-    end
-
-    if (KeyCode(key.yes) == 1)
+     end
+     KbReleaseWait;
+     if displayOption.mouse || displayOption.touch
+            displayOption.wait4release();
+     end
+     
+     
+     
+    if skipScale == 0
 
         aga.instruction=listImage.psychometry.(['instruction' test_name ]);
         aga.listQuestion=psychometryStuff.(test_name).listQuestion;
@@ -226,12 +257,15 @@ for iList = 1:numel(list)
     
     end
     KbReleaseWait;
+    if displayOption.mouse || displayOption.touch
+         displayOption.wait4release();
+    end
 end
 
 
 %% Scoring
 %-----------------------------------------------
- 
+ try
 % POMS
 if  isfield(data.psychometry,'POMS')
     data.psychometry.POMS.Anxiety = sum(data.psychometry.POMS.result([2 10 16 20 26 27 34 41]) - 1 ) +  sum(5-data.psychometry.POMS.result([22]));
@@ -300,7 +334,8 @@ if  isfield(data.psychometry,'IMI')
     data.psychometry.IMI.Pressure = sum(data.psychometry.IMI.result([6 13 18])) +  sum(8-data.psychometry.IMI.result([2 9])) ;
 end
 
-
+ catch
+ end
 
 %% Save data
 %__________________________________________________________________________

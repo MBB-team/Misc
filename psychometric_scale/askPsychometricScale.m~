@@ -2,25 +2,25 @@ function [ recScale, orderQuestion ] = askPsychometricScale(  stuff , displayOpt
 %% This is a generic function to perform a psychometric scale
 
 % Stuff is a structure containing:
-    % instruction : the index of instruction image
-    % listQuestion : cell object containing question
-    % listAnswer : cell object containing possible answers
-    % caseN/caseV : index of images for cases
+% instruction : the index of instruction image
+% listQuestion : cell object containing question
+% listAnswer : cell object containing possible answers
+% caseN/caseV : index of images for cases
 % displayOption
-    % win : index of the display window
+% win : index of the display window
 % key (or key.key)
-    % Required fields are up, down and valid
-    % key.back is an optionnal key allowing to get back to the previous question
+% Required fields are up, down and valid
+% key.back is an optionnal key allowing to get back to the previous question
 
 %% For compatibility
 if ~isfield(key, 'key')
     responseOption.key=key;
 else
     responseOption=key;
-end   
+end
 
 if isfield(responseOption.key, 'back')
-   isGoBackAllowed = 1;
+    isGoBackAllowed = 1;
 else
     isGoBackAllowed = 0;
 end
@@ -30,15 +30,15 @@ centerX=(displayOption.screenXY(3)-displayOption.screenXY(1))/2;
 centerY=(displayOption.screenXY(4)-displayOption.screenXY(2))/2;
 
 try
-miscOption.color.back;
+    miscOption.color.back;
 catch
-miscOption.color.back=[0 0 0];
+    miscOption.color.back=[0 0 0];
 end
 
 try
-miscOption.color.text;
+    miscOption.color.text;
 catch
-miscOption.color.text=[255 255 255];
+    miscOption.color.text=[255 255 255];
 end
 
 try
@@ -51,10 +51,37 @@ end
 %% Instructions
 Screen('DrawTexture',displayOption.win,stuff.instruction, [], displayOption.bound);
 Screen(displayOption.win, 'Flip');
-waitForKey(responseOption.key.space);
- 
-%% Perform scale
 KbReleaseWait;
+if displayOption.mouse || displayOption.touch
+    displayOption.wait4release();
+end
+
+% Press any key to resume or 'n' to skip
+stop=0;
+while stop==0
+    [k, timedown, KeyCode, d] = KbCheck;
+    if displayOption.mouse || displayOption.touch
+        [xMouse,yMouse,buttons] = displayOption.recordResponse(displayOption.win);
+    else
+        buttons = 0;
+    end
+    if KeyCode(key.no) == 1
+        skipScale = 1;
+        stop = 1;
+    elseif (any(KeyCode)==1) || any(buttons) == 1
+        skipScale = 0;
+        stop = 1;
+    end
+end
+KbReleaseWait;
+if displayOption.mouse || displayOption.touch
+    displayOption.wait4release();
+end
+
+
+%% Perform scale
+
+
 [k, timedown, KeyCode, d] = KbCheck;
 
 caseXYD=[1/16*centerX 3/4*centerY, centerY/20];
@@ -116,14 +143,13 @@ while iQ <= nQuestion
     isCancelQuestion = 0;
     isValidated = 0;
     if displayOption.mouse || displayOption.touch
-        displayOption.wait4release;
+        displayOption.wait4release();
     end
     
     while ((isValidated == 0))
         Screen('FillRect',displayOption.win,miscOption.color.back, displayOption.screenXY);
         text= [stuff.listQuestion{currentQ}];
         [nx, ny]= DrawFormattedText(displayOption.win, double(text), 1/16*centerX, 1/2*centerY, miscOption.color.text, nMaxCharacter);
-        %DrawFormattedText(displayOption.win, double(text), 'center', 1/2*centerY, miscOption.color.text);
         
         if displayOption.mouse || displayOption.touch
             [xMouse,yMouse,buttons] = displayOption.recordResponse(displayOption.win);
@@ -137,7 +163,7 @@ while iQ <= nQuestion
                 if isInsideTheBox([xMouse,yMouse],caseBox) && buttons(1)~=0
                     chosenAnswer = iA;
                     isValidated = 1;
-                else
+                elseif isValidated==0
                     chosenAnswer = 0; % no pre-selected answer with tactile/mouse version
                 end
             end
@@ -149,12 +175,12 @@ while iQ <= nQuestion
             end
             text = double(answer{iA});
             sx = caseBox(3) + caseXYD(3);
-            sy = caseBox(4) - caseXYD(3)/4;
+            sy = caseBox(4) - displayOption.caseYShift*caseXYD(3);
             [nx, ny] =DrawFormattedText(displayOption.win, text, sx,sy,miscOption.color.text, nMaxCharacter);
             shift = ny + 1.5* caseXYD(3);
             
         end
-
+        
         if ~(displayOption.mouse || displayOption.touch)
             if (KeyCode(key.up) == 1)
                 chosenAnswer=(chosenAnswer>1)*(chosenAnswer-1)+(chosenAnswer==1);
@@ -171,45 +197,60 @@ while iQ <= nQuestion
         end
         
         if isGoBackAllowed == 1
-             if (KeyCode(key.back) == 1)
-                 isCancelQuestion = 1;
-                 KbReleaseWait;
-             end
+            if (KeyCode(key.back) == 1)
+                isCancelQuestion = 1;
+                KbReleaseWait;
+            end
         end
         Screen(displayOption.win, 'Flip');
         if isValidated
             WaitSecs(0.5); % leave time to have feedback on the selected answer
         end
     end
-        
+    
     KbReleaseWait;
+    if displayOption.mouse || displayOption.touch
+            displayOption.wait4release();
+    end
     KeyCode=KeyCode*0;
     recScale(currentQ)=chosenAnswer;
     
-    if isGoBackAllowed == 1 & isCancelQuestion  ==1 
+    if isGoBackAllowed == 1 & isCancelQuestion  ==1
         iQ = max(1, iQ-1);
     else
         iQ = iQ+1;
     end
     
-    if iQ == nQuestion
+    if iQ == nQuestion +1
         Screen('FillRect',displayOption.win,miscOption.color.back, displayOption.screenXY);
         text= 'Appuyez sur n''importe quelle touche pour continuer.';
         [nx, ny]= DrawFormattedText(displayOption.win, double(text), 'center', 1/2*centerY, miscOption.color.text, nMaxCharacter);
         Screen(displayOption.win, 'Flip');
-        while  any(KeyCode) == 0
+        
+        
+        buttons = 0;
+        while  (any(KeyCode) == 0) & (any(buttons) ==0)
             [k, timedown, KeyCode, d] = KbCheck;
-            if (KeyCode(key.back) == 1)
-                iQ = max(1, iQ-1);
+            if displayOption.mouse || displayOption.touch
+                [xMouse,yMouse,buttons] = displayOption.recordResponse(displayOption.win);
+            else
+                buttons = 0;
             end
-            KbReleaseWait;
+            if (KeyCode(key.back) == 1)
+                iQ = nQuestion;
+            end
         end
+        KbReleaseWait;
+        if displayOption.mouse || displayOption.touch
+            displayOption.wait4release();
+        end
+        
     end
     
 end
 
 
 
-    
+
 end
 

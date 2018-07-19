@@ -95,7 +95,7 @@ function [logAnswer] = askQuestion2( questionOption, displayOption, scaleOption,
     logAnswer.isCancelQuestion = 0;
     isValidated = 0;
     if displayOption.mouse || displayOption.touch
-        displayOption.wait4release;
+        displayOption.wait4release();
         scaleBox = displayScaleTactile(displayOption.win, displayOption.screenXY, scaleOption, []);
     end
     
@@ -154,7 +154,7 @@ function [logAnswer] = askQuestion2( questionOption, displayOption, scaleOption,
             logAnswer.finalPosition=iCurseur;
             if ~(displayOption.mouse || displayOption.touch)
                 KbReleaseWait(-1);
-                displayOption.wait4release;
+                displayOption.wait4release();
             end
         end
         

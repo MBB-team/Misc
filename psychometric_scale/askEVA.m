@@ -1,19 +1,19 @@
 function [ result, orderQuestion ] = askEVA( stuff ,questionOption, displayOption, scaleOption, key, miscOption )
 
-%% This function launch EVA scales 
+%% This function launch EVA scales
 
 % Stuff is a structure containing:
-    % instruction : the index of instruction image
-    % listAnswer : a cell with one lign per pair of items
+% instruction : the index of instruction image
+% listAnswer : a cell with one lign per pair of items
 % displayOption
-    % win : index of the display window
+% win : index of the display window
 % key (or key.key)
-    % Required fields are left, right and valid
+% Required fields are left, right and valid
 % scaleOption
-    % arrow.image : index of the image for arrow
-    % nBar : actual n of bars of the index
-    % lVisibleBar : vector of visible bars (between 0 & 1)
-    
+% arrow.image : index of the image for arrow
+% nBar : actual n of bars of the index
+% lVisibleBar : vector of visible bars (between 0 & 1)
+
 % compatibility
 if ~isfield(key, 'key')
     responseOption.key=key;
@@ -22,9 +22,9 @@ else
 end
 
 if isfield(responseOption.key, 'back')
-   isGoBackAllowed = 1;
+    isGoBackAllowed = 1;
 else
-   isGoBackAllowed = 0;
+    isGoBackAllowed = 0;
 end
 
 
@@ -44,15 +44,42 @@ end
 
 
 if ~isfield(scaleOption, 'color')
-        scaleOption.color=[255 255 255];
+    scaleOption.color=[255 255 255];
 end
-    
 
-% Instructions 
+
+% Display Instructions
 Screen('DrawTexture',displayOption.win,stuff.instruction, [], displayOption.bound);
 Screen(displayOption.win, 'Flip');
-waitForKey(responseOption.key.space);
+KbReleaseWait;
+if displayOption.mouse || displayOption.touch
+    displayOption.wait4release();
+end
 
+% Press any key to resume or 'n' to skip
+stop=0;
+while stop==0
+    [k, timedown, KeyCode, d] = KbCheck;
+    if displayOption.mouse || displayOption.touch
+        [xMouse,yMouse,buttons] = displayOption.recordResponse(displayOption.win);
+    else
+        buttons = 0;
+    end
+    if KeyCode(key.no) == 1
+        skipScale = 1;
+        stop = 1;
+    elseif (any(KeyCode)==1) || any(buttons) == 1
+        skipScale = 0;
+        stop = 1;
+    end
+end
+KbReleaseWait;
+if displayOption.mouse || displayOption.touch
+    displayOption.wait4release();
+end
+
+
+if skipScale==0
 ShowCursor();
 
 if size(stuff.listAnswer, 1) == 1
@@ -67,7 +94,7 @@ else
 end
 
 
-% Perform EVA 
+% Perform EVA
 iQuestion = 1;
 while iQuestion <= nQuestion
     
@@ -97,17 +124,28 @@ while iQuestion <= nQuestion
         text= 'Appuyez sur n''importe quelle touche pour continuer.';
         [nx, ny]= DrawFormattedText(displayOption.win, double(text), 'center', 'center', scaleOption.color);
         Screen(displayOption.win, 'Flip');
-        while  any(KeyCode) == 0
+        buttons = 0;
+        while  (any(KeyCode) == 0) & (any(buttons) ==0)
             [k, timedown, KeyCode, d] = KbCheck;
+            if displayOption.mouse || displayOption.touch
+                [xMouse,yMouse,buttons] = displayOption.recordResponse(displayOption.win);
+            else
+                buttons = 0;
+            end
             if (KeyCode(key.back) == 1)
-                iQuestion = nQuestion;
+                iQ = nQuestion;
             end
         end
         KbReleaseWait;
+        if displayOption.mouse || displayOption.touch
+            displayOption.wait4release();
+        end
     end
     
 end
-
-
+else
+    result = NaN;
+    orderQuestion = NaN;
+end
 end
 

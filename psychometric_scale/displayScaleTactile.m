@@ -77,9 +77,9 @@ else
 end
 scaleBox= [scaleDim(1) scaleDim(2)-hBox scaleDim(3) scaleDim(2)+hBox];
 
-if isfield(scaleOption.graphicScale, 'texture');
+try 
     Screen('DrawTexture',wPtr,scaleOption.graphicScale.texture, [], scaleBox);
-else  
+catch 
     for iBox = 1:scaleOption.nBar
         box = [scaleDim(1)+(iBox-1)*wBox scaleDim(2)-hBox scaleDim(1)+(iBox)*wBox scaleDim(2)+hBox];
         if isVisibleBar(iBox) == 1
