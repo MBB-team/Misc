@@ -1,0 +1,24 @@
+function [ mu,sigma] = log_norm_moments(mu_0,sigma_0,direction)
+% ANALYTICAL TRANSFORMATION OF 1RST AND 2ND ORDER MOMENTS of a normal law
+% into a log-normal law 
+%
+%INPUTS/OUTPUTS:
+%   _ " mu " are 1rst order moments (means) and "sigma" are standard
+%   deviation
+%
+%   - if direction==1
+%         x_0 ~ N(mu_0,sigma_0) & x = exp(x_0)
+%         [mu,sigma] = [ E[x] , sqrt(Var[x])]
+%   - elseif direction==2
+%         x ~ N(mu,sigma) & x_0 = exp(x) (ie. x_0 follows a log-normal law)
+%         [mu,sigma] = [ E[x] , sqrt(Var[x]) ]
+
+if direction == 1
+    mu = exp(mu_0+((sigma_0)^2/2));
+    sigma = sqrt((exp((sigma_0)^2)-1)*exp(2*mu_0+(sigma_0)^2));
+elseif direction == 2
+    mu = log(mu_0/sqrt(((sigma_0/mu_0)^2)+1));
+    sigma = sqrt(log(((sigma_0/mu_0)^2)+1)); 
+end
+
+end
